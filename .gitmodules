@@ -1,0 +1,3 @@
+[submodule "dokku.vagrant-config"]
+	path = dokku.vagrant-config
+	url = https://github.com/neam/dokku.vagrant-config.git
