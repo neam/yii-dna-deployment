@@ -1,3 +1,6 @@
 [submodule "dokku.vagrant-config"]
 	path = dokku.vagrant-config
 	url = https://github.com/neam/dokku.vagrant-config.git
+[submodule "heroku-buildpack-php"]
+	path = heroku-buildpack-php
+	url = https://github.com/neam/heroku-buildpack-php.git
