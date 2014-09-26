@@ -45,9 +45,9 @@ source _set-codeception-group-args.sh
 # run unit tests (against a test database)
 
     # make sure the db_test database exists and is empty
-    export DB_NAME_ORG=$DB_NAME
-    export DB_NAME=db_test
-    echo "DROP DATABASE IF EXISTS $DB_NAME; CREATE DATABASE $DB_NAME;" | mysql -h$DB_HOST -P$DB_PORT -u$DB_USER --password=$DB_PASSWORD
+    export DATABASE_NAME_ORG=$DATABASE_NAME
+    export DATABASE_NAME=db_test
+    echo "DROP DATABASE IF EXISTS $DATABASE_NAME; CREATE DATABASE $DATABASE_NAME;" | mysql -h$DATABASE_HOST -P$DATABASE_PORT -u$DATABASE_USER --password=$DATABASE_PASSWORD
 
     # generate local test config
     export SAUCELABS=0
@@ -63,8 +63,8 @@ source _set-codeception-group-args.sh
     ../app/yiic mysqldump --connectionID=dbTest --dumpPath=tests/codeception/_data/
     vendor/bin/codecept run unit $CODECEPTION_GROUP_ARGS --fail-fast
 
-    # restore DB_NAME
-    export DB_NAME=$DB_NAME_ORG
+    # restore DATABASE_NAME
+    export DATABASE_NAME=$DATABASE_NAME_ORG
 
 # prepare acceptance tests
 
@@ -74,7 +74,7 @@ source _set-codeception-group-args.sh
     export CMS_HOST=$CMS_BASE_URL # todo - use CMS_BASE_URL in codeception config instead
 
     # take an initial db dump before any tests have been run (it is used below to restore the database before the desktop-sized tests are run)
-    mysqldump --user="$DB_USER" --password="$DB_PASSWORD" --host="$DB_HOST" --port="$DB_PORT" --no-create-db "$DB_NAME" > /tmp/pre-acceptance-tests-dump.sql
+    mysqldump --user="$DATABASE_USER" --password="$DATABASE_PASSWORD" --host="$DATABASE_HOST" --port="$DATABASE_PORT" --no-create-db "$DATABASE_NAME" > /tmp/pre-acceptance-tests-dump.sql
 
 # run acceptance tests on a small-screen chrome, "mobile"
 
@@ -86,12 +86,12 @@ source _set-codeception-group-args.sh
 
     export env=cms-saucelabs-chrome-win7-small-oblong
     vendor/bin/codecept run acceptance-init --env=$env $CODECEPTION_GROUP_ARGS --debug --fail-fast
-    #mysqldump --user="$DB_USER" --password="$DB_PASSWORD" --host="$DB_HOST" --port="$DB_PORT" --no-create-db db > codeception/_data/dump.sql
+    #mysqldump --user="$DATABASE_USER" --password="$DATABASE_PASSWORD" --host="$DATABASE_HOST" --port="$DATABASE_PORT" --no-create-db db > codeception/_data/dump.sql
     vendor/bin/codecept run acceptance --env=$env $CODECEPTION_GROUP_ARGS --debug --fail-fast
 
 # reset the database prior to running acceptance tests anew
 
-    mysql -A --host="$DB_HOST" --port="$DB_PORT" --user="$DB_USER" --password="$DB_PASSWORD" "$DB_NAME" < /tmp/pre-acceptance-tests-dump.sql
+    mysql -A --host="$DATABASE_HOST" --port="$DATABASE_PORT" --user="$DATABASE_USER" --password="$DATABASE_PASSWORD" "$DATABASE_NAME" < /tmp/pre-acceptance-tests-dump.sql
 
 # run acceptance tests on a desktop-sized screen
 
@@ -105,7 +105,7 @@ source _set-codeception-group-args.sh
     #export env=cms-saucelabs-firefox-win7
     #export env=cms-saucelabs-chrome-osx-108
     vendor/bin/codecept run acceptance-init --env=$env $CODECEPTION_GROUP_ARGS --debug --fail-fast
-    #mysqldump --user="$DB_USER" --password="$DB_PASSWORD" --host="$DB_HOST" --port="$DB_PORT" --no-create-db db > codeception/_data/dump.sql
+    #mysqldump --user="$DATABASE_USER" --password="$DATABASE_PASSWORD" --host="$DATABASE_HOST" --port="$DATABASE_PORT" --no-create-db db > codeception/_data/dump.sql
     vendor/bin/codecept run acceptance --env=$env $CODECEPTION_GROUP_ARGS --debug --fail-fast
 
 # run api tests
