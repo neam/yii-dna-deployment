@@ -5,31 +5,9 @@ set -x
 if [ "$connectionID" == "" ]; then
     connectionID=db
 fi
-chown -R nobody: app/data/
-chown -R nobody: app/runtime/
-chown -R nobody: www/assets/
-chown -R nobody: www/runtime/
-chmod -R g+rw app/data/
-chmod -R g+rw app/runtime/
-chmod -R g+rw www/assets/
-chmod -R g+rw www/runtime/
-
-# temporarily until it is found enough to only set the user to nobody
-chmod -R 777 app/data/
-chmod -R 777 app/runtime/
-chmod -R 777 www/assets/
-chmod -R 777 www/runtime/
 
 # fail on any error
 set -o errexit
-
-# install bower dependencies (bower_components are committed when dokku is deployed nowadays)
-#node_modules/.bin/bower install --allow-root
-
-# generate the js app
-# npm install -g grunt
-#cp app/js/config.dist.js app/js/config.js
-#grunt build
 
 # necessary for user data backup uploads
 deploy/install-s3cmd.sh
