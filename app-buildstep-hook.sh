@@ -84,11 +84,11 @@ cd $BUILD_DIR/$REL_PATH
 
     paths=$(jq --raw-output '.extra.writable // [] | .[]' < "composer.json")
     if [ "$paths" != "" ]; then
-        for path in "$paths"; do
-            chown -R nobody: "$path"
-            chmod -R g+rw "$path"
-            chmod -R 777 "$path" # currently seems necessary
-        done
+        while read -r p; do
+            chown -R nobody: "$p"
+            chmod -R g+rw "$p"
+            chmod -R 777 "$p" # currently seems necessary
+        done <<< "$paths"
     fi
 
 exit 0
