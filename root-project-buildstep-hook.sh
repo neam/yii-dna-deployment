@@ -2,7 +2,6 @@
 
 # This file performs certain actions in the end of the buildpack build process,
 # thus changes here are compiled into the application slug.
-# The working directory is $BUILD_DIR
 
 # debug
 set -x
@@ -10,7 +9,13 @@ set -x
 # fail on any error
 set -o errexit
 
+# make sure we are in $BUILD_DIR
+cd $BUILD_DIR
+
 # necessary for user data backup uploads
+ls -l .
+ls -l vendor/neam/yii-dna-deployment/
+ls -l vendor/neam/yii-dna-deployment/install-s3cmd.sh
 vendor/neam/yii-dna-deployment/install-s3cmd.sh
 
 # install software useful to be contained in the docker image for debugging etc later
