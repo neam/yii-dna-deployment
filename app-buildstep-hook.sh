@@ -72,12 +72,11 @@ cd $BUILD_DIR/$REL_PATH
 
 # === yii-dna custom logic
 
-    # install bower dependencies
+    # install bower dependencies (requires bower to be installed in root project dir)
 
-    if [ -f "bower.json" ]; then
+    if [ -f "bower.json" ] && [ -f "$BUILD_DIR/node_modules/.bin/bower" ]; then
 
-        npm install -g bower
-        node_modules/.bin/bower install --allow-root
+        $BUILD_DIR/node_modules/.bin/bower install --allow-root
 
     fi
 
