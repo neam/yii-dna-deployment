@@ -81,10 +81,12 @@ cd $BUILD_DIR/$REL_PATH
     # set writable paths
 
     paths=$(jq --raw-output '.extra.writable // [] | .[]' < "composer.json")
-    for path in "$paths"; do
-        chown -R nobody: "$path"
-        chmod -R g+rw "$path"
-        chmod -R 777 "$path" # currently seems necessary
-    done
+    if [ "$paths" != "" ]; then
+        for path in "$paths"; do
+            chown -R nobody: "$path"
+            chmod -R g+rw "$path"
+            chmod -R 777 "$path" # currently seems necessary
+        done
+    fi
 
 exit 0
