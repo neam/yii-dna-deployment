@@ -57,7 +57,7 @@ cd $BUILD_DIR/$REL_PATH
         status "Installing application dependencies with Composer"
         {
             cd "$target"
-            php "vendor/composer/bin/composer.phar" install \
+            php "$BUILD_DIR/vendor/composer/bin/composer.phar" install \
                 --prefer-dist \
                 --optimize-autoloader \
                 --no-interaction \
@@ -81,10 +81,10 @@ cd $BUILD_DIR/$REL_PATH
     # set writable paths
 
     paths=$(jq --raw-output '.extra.writable // [] | .[]' < "composer.json")
-    for fn in "$paths"; do
-        chown -R nobody: app/data/
-        chmod -R g+rw app/data/
-        chmod -R 777 app/data/ # currently necessary since above is not enough for heroku-buildpack-php
+    for path in "$paths"; do
+        chown -R nobody: "$path"
+        chmod -R g+rw "$path"
+        chmod -R 777 "$path" # currently seems necessary
     done
 
 exit 0
