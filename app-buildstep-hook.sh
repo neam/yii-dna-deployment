@@ -24,7 +24,7 @@ source $basedir/common.sh
 # step into the folder to perform actions within
 cd $BUILD_DIR/$REL_PATH
 
-# === selected logic from heroku-buildpack-php/bin/compile_node
+# === selected logic from chh/heroku-buildpack-php bin/compile_node
 
     if [ -f "package.json" ]; then
 
@@ -35,6 +35,41 @@ cd $BUILD_DIR/$REL_PATH
 
         # Output npm debug info on error
         trap cat_npm_debug_log ERR
+
+        if test -f $build_dir/npm-shrinkwrap.json; then
+          # Use npm-shrinkwrap.json's checksum as the cachebuster
+          status "Found npm-shrinkwrap.json"
+          shrinkwrap_checksum=$(cat $build_dir/npm-shrinkwrap.json | md5sum | awk '{print $1}')
+          cache_dir="$cache_basedir/$shrinkwrap_checksum"
+          test -d $cache_dir && status "npm-shrinkwrap.json unchanged since last build"
+        else
+          # Fall back to package.json as the cachebuster.
+          protip "Use npm shrinkwrap to lock down dependency versions"
+          package_json_checksum=$(cat $build_dir/package.json | md5sum | awk '{print $1}')
+          cache_dir="$cache_basedir/$package_json_checksum"
+          test -d $cache_dir && status "package.json unchanged since last build"
+        fi
+
+        if test -d $cache_dir; then
+          status "Restoring node_modules from cache"
+          test -d $cache_dir/node_modules && cp -r $cache_dir/node_modules $build_dir/
+        fi
+
+        status "Installing dependencies"
+        npm install --production 2>&1 | indent
+
+        status "Pruning unused dependencies"
+        npm prune 2>&1 | indent
+
+        status "Caching node_modules for future builds"
+        rm -rf $cache_dir
+        mkdir -p $cache_dir
+        test -d $build_dir/node_modules && cp -r $build_dir/node_modules $cache_dir/
+
+        status "Cleaning up node-gyp and npm artifacts"
+        rm -rf "$build_dir/.node-gyp"
+        rm -rf "$build_dir/.npm"
+
 
         status "Installing dependencies"
         npm install --production 2>&1 | indent
