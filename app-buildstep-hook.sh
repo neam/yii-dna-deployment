@@ -4,11 +4,7 @@
 # thus changes here are compiled into the application slug.
 # The working directory is $BUILD_DIR
 
-# debug
-set -x
-
-# fail on any error
-set -o errexit
+set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
 
 # buildpack paths are sent as the first three arguments
 BUILD_DIR="$1"

@@ -3,11 +3,7 @@
 # This file performs certain actions in the end of the buildpack build process,
 # thus changes here are compiled into the application slug.
 
-# debug
-set -x
-
-# fail on any error
-set -o errexit
+set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
 
 # buildpack paths are sent as the first three arguments
 BUILD_DIR="$1"
