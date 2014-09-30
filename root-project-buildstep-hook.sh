@@ -18,7 +18,7 @@ basedir="$3"
 cd $BUILD_DIR
 
 # necessary for user data backup uploads
-vendor/neam/yii-dna-deployment/install-s3cmd.sh
+bash vendor/neam/yii-dna-deployment/install-s3cmd.sh
 
 # install software useful to be contained in the docker image for debugging etc later
 apt-get install -y -q sudo nano htop strace
