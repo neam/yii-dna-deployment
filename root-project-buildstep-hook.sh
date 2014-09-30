@@ -9,6 +9,11 @@ set -x
 # fail on any error
 set -o errexit
 
+# buildpack paths are sent as the first three arguments
+BUILD_DIR="$1"
+CACHE_DIR="$2"
+basedir="$3"
+
 # make sure we are in $BUILD_DIR
 cd $BUILD_DIR
 
