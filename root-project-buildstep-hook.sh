@@ -18,9 +18,6 @@ basedir="$3"
 cd $BUILD_DIR
 
 # necessary for user data backup uploads
-ls -l .
-ls -l vendor/neam/yii-dna-deployment/
-ls -l vendor/neam/yii-dna-deployment/install-s3cmd.sh
 vendor/neam/yii-dna-deployment/install-s3cmd.sh
 
 # install software useful to be contained in the docker image for debugging etc later
