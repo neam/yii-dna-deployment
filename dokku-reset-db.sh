@@ -7,10 +7,10 @@ script_path=`dirname $0`
 set -o errexit
 
 # make sure that the persistent p3media folder exists
-$script_path/configure-persistent-p3media.sh
+bash $script_path/configure-persistent-p3media.sh
 
 # set s3 credentials
-$script_path/configure-s3cmd.sh
+bash $script_path/configure-s3cmd.sh
 
 # reset db
-connectionID=db $script_path/../shell-scripts/reset-db.sh
+connectionID=db bash $script_path/../yii-dna-pre-release-testing/shell-scripts/reset-db.sh
