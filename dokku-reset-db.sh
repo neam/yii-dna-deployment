@@ -6,11 +6,14 @@ script_path=`dirname $0`
 # fail on any error
 set -o errexit
 
+# workaround unknown bug that removes executable permission from all files
+chmod +x $script_path/*.sh
+
 # make sure that the persistent p3media folder exists
-bash $script_path/configure-persistent-p3media.sh
+$script_path/configure-persistent-p3media.sh
 
 # set s3 credentials
-bash $script_path/configure-s3cmd.sh
+$script_path/configure-s3cmd.sh
 
 # reset db
-connectionID=db bash $script_path/../yii-dna-pre-release-testing/shell-scripts/reset-db.sh
+connectionID=db $script_path/../shell-scripts/reset-db.sh
