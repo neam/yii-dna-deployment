@@ -44,6 +44,6 @@ php $HOME/composer.phar install --dev --prefer-dist
 source _set-codeception-group-args.sh
 
 # run ci tests entry script
-$CI_TESTS_ENTRY_SCRIPT
+bash $CI_TESTS_ENTRY_SCRIPT
 
 exit 0
