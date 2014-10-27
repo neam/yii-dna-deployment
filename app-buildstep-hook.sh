@@ -111,15 +111,19 @@ cd $BUILD_DIR/$REL_PATH
 
     fi
 
-    # set writable paths
+    # set writable paths if specified in composer.json
 
-    paths=$(jq --raw-output '.extra.writable // [] | .[]' < "composer.json")
-    if [ "$paths" != "" ]; then
-        while read -r p; do
-            chown -R nobody: "$p"
-            chmod -R g+rw "$p"
-            chmod -R 777 "$p" # currently seems necessary
-        done <<< "$paths"
+    if [ -f "composer.json" ]; then
+
+        paths=$(jq --raw-output '.extra.writable // [] | .[]' < "composer.json")
+        if [ "$paths" != "" ]; then
+            while read -r p; do
+                chown -R nobody: "$p"
+                chmod -R g+rw "$p"
+                chmod -R 777 "$p" # currently seems necessary
+            done <<< "$paths"
+        fi
+
     fi
 
 exit 0
