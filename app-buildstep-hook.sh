@@ -32,16 +32,16 @@ cd $BUILD_DIR/$REL_PATH
         # Output npm debug info on error
         trap cat_npm_debug_log ERR
 
-        if test -f $build_dir/npm-shrinkwrap.json; then
+        if test -f npm-shrinkwrap.json; then
           # Use npm-shrinkwrap.json's checksum as the cachebuster
           status "Found npm-shrinkwrap.json"
-          shrinkwrap_checksum=$(cat $build_dir/npm-shrinkwrap.json | md5sum | awk '{print $1}')
+          shrinkwrap_checksum=$(cat npm-shrinkwrap.json | md5sum | awk '{print $1}')
           cache_dir="$cache_basedir/$shrinkwrap_checksum"
           test -d $cache_dir && status "npm-shrinkwrap.json unchanged since last build"
         else
           # Fall back to package.json as the cachebuster.
           protip "Use npm shrinkwrap to lock down dependency versions"
-          package_json_checksum=$(cat $build_dir/package.json | md5sum | awk '{print $1}')
+          package_json_checksum=$(cat package.json | md5sum | awk '{print $1}')
           cache_dir="$cache_basedir/$package_json_checksum"
           test -d $cache_dir && status "package.json unchanged since last build"
         fi
