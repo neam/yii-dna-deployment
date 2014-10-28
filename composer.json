@@ -12,6 +12,16 @@
             "homepage": "http://www.neam.se"
         }
     ],
+    "bin": [
+        "app-buildstep-hook.sh",
+        "configure-persistent-p3media.sh",
+        "configure-s3cmd.sh",
+        "dokku-reset-db.sh",
+        "dokku-run-tests.sh",
+        "install-s3cmd.sh",
+        "root-project-buildstep-hook.sh",
+        "update-buildpacks-file-revision.sh"
+    ],
     "require": {
         "php": ">=5.3.0",
         "neam/yii-dna-pre-release-testing": "dev-develop",
