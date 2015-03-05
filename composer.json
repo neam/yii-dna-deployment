@@ -15,7 +15,6 @@
     "bin": [
         "configure-s3cmd.sh",
         "install-s3cmd.sh",
-        "server-config-generator/generate.sh",
         "dokku-legacy/app-buildstep-hook.sh",
         "dokku-legacy/configure-persistent-p3media.sh",
         "dokku-legacy/dokku-reset-db.sh",
