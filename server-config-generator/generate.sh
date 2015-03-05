@@ -107,10 +107,12 @@ if [ -f "$BUILD_DIR/composer.json" ]; then
   # note about debian jessie
   if [ -n "$(package_php_version)" ] ; then
     protip "Foo"
+    #=5.6.6
   fi
 
   if [ -n "$(package_nginx_version)" ] ; then
     protip "Foo"
+    #=0.10.36
   fi
 
   if [ -n "$(package_framework)" ] ; then
