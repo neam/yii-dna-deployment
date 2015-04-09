@@ -9,10 +9,12 @@ Requires a compatible docker stack. Currently, the `debian-php-nginx.dna-project
  
 1. Copy boilerplate files
 
+
     cp -r vendor/neam/yii-dna-deployment/skeleton/* . 
   
 2. Create a private secrets.php file for sensitive deployment-related information that should not be committed
- 
+
+
     cp deploy/config/secrets.dist.php deploy/config/secrets.php
     
 3. Adapt `deploy/config/secrets.php` and `deploy/config/identity.php` for your project

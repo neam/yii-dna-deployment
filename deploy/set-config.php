@@ -2,15 +2,11 @@
 
 namespace neam\bootstrap;
 
-// Expect the adoveo-web "paas" config
+// Expect the "paas" config
 
 require(dirname(
         __FILE__
     ) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'paas' . DIRECTORY_SEPARATOR . 'include.php');
-
-// Expect the pages config
-
-// TODO
 
 // Add deployment-only overrides
 
