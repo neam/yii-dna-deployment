@@ -57,7 +57,7 @@ At this stage the stack is prepared and runs the yii application, but if this is
 Link the router service to the new stack's `web` service and redeploy the router service.
 TODO: Find a way to perform this efficiently with zero downtime.
 
-### Reset the database
+## Interact with deployment
  
 SSH into the worker:
 
@@ -65,7 +65,16 @@ SSH into the worker:
     
 Copy paste the contents of deployments/{relevant-deployment}/.env into the SSH session.
 
+You can then perform any of the below tasks.
+
+### Reset the database
+ 
 Reset the database:
 
     /app/bin/reset-db.sh
- 
+
+### Upload current media files to s3 public files bucket
+
+Upload current media files to s3 public files bucket:
+
+    vendor/neam/yii-dna-deployment/util/upload-current-media-as-public-files.sh
