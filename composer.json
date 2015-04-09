@@ -13,8 +13,15 @@
         }
     ],
     "bin": [
-        "configure-s3cmd.sh",
-        "install-s3cmd.sh",
+        "deploy/build.sh",
+        "deploy/set-config.sh",
+        "util/prepare-new-db.sh",
+        "util/setup-db.sh",
+        "util/setup-rackspace-cloud-db.sh",
+        "util/tutum-ssh.sh",
+        "util/upload-current-media-as-public-files.sh",
+        "dokku-legacy/configure-s3cmd.sh",
+        "dokku-legacy/install-s3cmd.sh",
         "dokku-legacy/app-buildstep-hook.sh",
         "dokku-legacy/configure-persistent-p3media.sh",
         "dokku-legacy/dokku-reset-db.sh",
