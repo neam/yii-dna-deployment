@@ -105,5 +105,5 @@ fi
 echo
 echo 'Then run the following to create the cloud database with these credentials:'
 echo
-echo "    deploy/util/setup-db.sh $DATABASE_HOST $DATABASE_PORT $NEW_DATABASE_NAME $NEW_DATABASE_USER $NEW_DATABASE_PASSWORD"
+echo "    vendor/neam/yii-dna-deployment/util/setup-db.sh $DATABASE_HOST $DATABASE_PORT $NEW_DATABASE_NAME $NEW_DATABASE_USER $NEW_DATABASE_PASSWORD"
 echo

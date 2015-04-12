@@ -111,7 +111,7 @@ fi
 
 echo 'If no errors are shown above, config is prepared for '$APPVHOST'. To build images and push to tutum registry:'
 echo
-echo "  deploy/ci-hooks/build.sh"
+echo "  vendor/neam/yii-dna-deployment/deploy/build.sh"
 echo
 echo 'Then, run one of the following to deploy:'
 echo
