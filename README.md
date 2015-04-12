@@ -36,13 +36,18 @@ Prepare the common variables (both locally and on build server):
 
     source vendor/neam/yii-dna-deployment/deploy/prepare.sh
 
-On build server:
+Locally or on build server (not all commands are necessary on each incremental build, but are included for completeness):
 
+    stack/src/git-pull-recursive.sh
     docker-compose pull
-    docker-compose run builder stack/src/git-pull-recursive.sh
+    docker-compose up -d
+    vendor/bin/docker-stack build-directory-sync
+    cd ../$(basename $(pwd))-build/
     docker-compose run builder stack/src/reset-vendor.sh
-    docker-compose run builder /bin/bash manager/ui/angular-frontend/full-build.sh
+    docker-compose run -e PREFER=dist builder stack/src/install-deps.sh
+    docker-compose run builder stack/src/build.sh
     vendor/neam/yii-dna-deployment/deploy/build.sh
+    cd -
 
 Locally:
 
