@@ -61,6 +61,7 @@ function servicename {
     STR=${STR//\//}
     STR=${STR//./}
     STR=${STR//-/}
+    STR=${STR//_/}
     STR="$(echo $STR | tr '[:upper:]' '[:lower:]')" # UPPERCASE to lowercase
     # Max length 64 chars
     STR=${STR:0:64}
@@ -88,7 +89,7 @@ if [ "$?" == "0" ]; then
      | sed 's|="|: "|' \
      > $DEPLOYMENTS_ROOT/$APPVHOST/.env.yml
 
-    VIRTUAL_HOST_BASED_WEB_SERVICE_NAME=$(servicename "web${VIRTUAL_HOST}")
+    VIRTUAL_HOST_BASED_WEB_SERVICE_NAME=$(servicename "web${APPVHOST}")
 
     cat stack/docker-compose-production-tutum.yml \
      | sed 's|%COMMITSHA%|'$COMMITSHA'|' \
