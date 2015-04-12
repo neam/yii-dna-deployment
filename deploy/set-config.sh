@@ -53,6 +53,22 @@ echo 'Config for '$APPVHOST':'
 echo
 php vendor/neam/php-app-config/export.php > $DEPLOYMENTS_ROOT/$APPVHOST/.env
 
+function servicename {
+
+    local STR=$1
+
+    # Permitted characters: [0-9,a-z,A-Z] (basic Latin letters, digits 0-9)
+    STR=${STR//\//}
+    STR=${STR//./}
+    STR=${STR//-/}
+    STR="$(echo $STR | tr '[:upper:]' '[:lower:]')" # UPPERCASE to lowercase
+    # Max length 64 chars
+    STR=${STR:0:64}
+
+    echo "$STR"
+
+}
+
 if [ "$?" == "0" ]; then
     source $DEPLOYMENTS_ROOT/$APPVHOST/.env
 
@@ -71,10 +87,13 @@ if [ "$?" == "0" ]; then
      | sed 's|="|: "|' \
      > $DEPLOYMENTS_ROOT/$APPVHOST/.env.yml
 
+    VIRTUAL_HOST_BASED_WEB_SERVICE_NAME=$(servicename "web${VIRTUAL_HOST}")
+
     cat stack/docker-compose-production-tutum.yml \
      | sed 's|%COMMITSHA%|'$COMMITSHA'|' \
      | sed 's|%APPVHOST%|'$APPVHOST'|' \
      | sed 's|%VIRTUAL_HOST%|'$APPVHOST'|' \
+     | sed 's|%VIRTUAL_HOST_BASED_WEB_SERVICE_NAME%|'$VIRTUAL_HOST_BASED_WEB_SERVICE_NAME'|' \
      > $DEPLOYMENTS_ROOT/$APPVHOST/docker-compose-production-tutum.yml
 
     sed -e '/ENVIRONMENT_YAML/ {' -e 'r '"$DEPLOYMENTS_ROOT/$APPVHOST/.env.yml" -e 'd' -e '}' -i '' $DEPLOYMENTS_ROOT/$APPVHOST/docker-compose-production-tutum.yml
