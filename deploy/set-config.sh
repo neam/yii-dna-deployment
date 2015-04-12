@@ -78,6 +78,7 @@ if [ "$?" == "0" ]; then
      | sed 's|%COMMITSHA%|'$COMMITSHA'|' \
      | sed 's|%ENV_FILE_DIR%|'$DEPLOYMENTS_ROOT/$APPVHOST'|' \
      | sed 's|%APPVHOST%|'$APPVHOST'|' \
+     | sed 's|%DEPLOY_STABILITY_TAG%|'$DEPLOY_STABILITY_TAG'|' \
      | sed 's|%VIRTUAL_HOST%|'$APPVHOST'|' \
      > $DEPLOYMENTS_ROOT/$APPVHOST/docker-compose-production.yml
 
@@ -92,6 +93,7 @@ if [ "$?" == "0" ]; then
     cat stack/docker-compose-production-tutum.yml \
      | sed 's|%COMMITSHA%|'$COMMITSHA'|' \
      | sed 's|%APPVHOST%|'$APPVHOST'|' \
+     | sed 's|%DEPLOY_STABILITY_TAG%|'$DEPLOY_STABILITY_TAG'|' \
      | sed 's|%VIRTUAL_HOST%|'$APPVHOST'|' \
      | sed 's|%VIRTUAL_HOST_BASED_WEB_SERVICE_NAME%|'$VIRTUAL_HOST_BASED_WEB_SERVICE_NAME'|' \
      > $DEPLOYMENTS_ROOT/$APPVHOST/docker-compose-production-tutum.yml
