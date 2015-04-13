@@ -89,7 +89,7 @@ if [ "$?" == "0" ]; then
      | sed 's|="|: "|' \
      > $DEPLOYMENTS_ROOT/$APPVHOST/.env.yml
 
-    VIRTUAL_HOST_BASED_WEB_SERVICE_NAME=$(servicename "web${APPVHOST}")
+    VIRTUAL_HOST_BASED_WEB_SERVICE_NAME=$(servicename "web${APPVHOST}${COMMITSHA}")
 
     cat stack/docker-compose-production-tutum.yml \
      | sed 's|%COMMITSHA%|'$COMMITSHA'|' \
@@ -122,9 +122,9 @@ echo 'Then, run one of the following to deploy:'
 echo
 echo "  export TUTUM_USER=\$TUTUM_USER"
 echo "  export TUTUM_APIKEY=\$TUTUM_APIKEY"
-echo "  tutum stack create --name=$DATETIME-$APPVHOST -f $DEPLOYMENTS_ROOT/$APPVHOST/docker-compose-production-tutum.yml | tee $DEPLOYMENTS_ROOT/$APPVHOST/.$DATETIME-tutum-stack-id"
-echo "  tutum stack update -f $DEPLOYMENTS_ROOT/$APPVHOST/docker-compose-production-tutum.yml \$(cat $DEPLOYMENTS_ROOT/$APPVHOST/.$DATETIME-tutum-stack-id)"
-echo "  tutum stack redeploy \$(cat $DEPLOYMENTS_ROOT/$APPVHOST/.$DATETIME-tutum-stack-id)"
+echo "  tutum stack create --name=$DATETIME-$APPVHOST-$COMMITSHA -f $DEPLOYMENTS_ROOT/$APPVHOST/docker-compose-production-tutum.yml | tee $DEPLOYMENTS_ROOT/$APPVHOST/.tutum-stack-id-$COMMITSHA"
+echo "  tutum stack update -f $DEPLOYMENTS_ROOT/$APPVHOST/docker-compose-production-tutum.yml \$(cat $DEPLOYMENTS_ROOT/$APPVHOST/.tutum-stack-id-$COMMITSHA)"
+echo "  tutum stack redeploy \$(cat $DEPLOYMENTS_ROOT/$APPVHOST/.tutum-stack-id-$COMMITSHA)"
 echo
 echo "  docker-compose --project-name $APPVHOST -f $DEPLOYMENTS_ROOT/$APPVHOST/docker-compose-production.yml up -d"
 echo
