@@ -38,6 +38,7 @@ Prepare the common variables (both locally and on build server):
 
 Locally or on build server (not all commands are necessary on each incremental build, but are included for completeness):
 
+    source vendor/neam/yii-dna-deployment/deploy/prepare.sh
     stack/src/git-pull-recursive.sh
     docker-compose pull
     docker-compose up -d
