@@ -2,7 +2,7 @@
 
 cd $DEPLOYMENTS_ROOT/$APPVHOST
 
-STACK_ID=$(cat .tutum-stack-id)
+STACK_ID=$(cat .tutum-stack-id-$COMMITSHA)
 tutum stack inspect $STACK_ID > .tutum-stack.json
 WORKER_CONTAINER_ID=$(cat .tutum-stack.json | jq '.services | map(select(.name == "worker"))' | jq -r '.[0].containers[0]' | awk -F  "/" '{print $5}')
 tutum container inspect $WORKER_CONTAINER_ID > .tutum-worker-container.json
