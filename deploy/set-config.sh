@@ -112,6 +112,8 @@ if [ "$DATABASE_HOST" == "" ]; then
     $script_path/../util/prepare-new-db.sh $APPVHOST
 fi
 
+DATETIME=$(date +"%Y-%m-%d_%H%M%S")
+
 echo 'If no errors are shown above, config is prepared for '$APPVHOST'. To build images and push to tutum registry:'
 echo
 echo "  vendor/neam/yii-dna-deployment/deploy/build.sh"
@@ -120,9 +122,9 @@ echo 'Then, run one of the following to deploy:'
 echo
 echo "  export TUTUM_USER=\$TUTUM_USER"
 echo "  export TUTUM_APIKEY=\$TUTUM_APIKEY"
-echo "  tutum stack create --name=$APPVHOST -f $DEPLOYMENTS_ROOT/$APPVHOST/docker-compose-production-tutum.yml | tee $DEPLOYMENTS_ROOT/$APPVHOST/.tutum-stack-id"
-echo "  tutum stack update -f $DEPLOYMENTS_ROOT/$APPVHOST/docker-compose-production-tutum.yml \$(cat $DEPLOYMENTS_ROOT/$APPVHOST/.tutum-stack-id)"
-echo "  tutum stack redeploy \$(cat $DEPLOYMENTS_ROOT/$APPVHOST/.tutum-stack-id)"
+echo "  tutum stack create --name=$DATETIME-$APPVHOST -f $DEPLOYMENTS_ROOT/$APPVHOST/docker-compose-production-tutum.yml | tee $DEPLOYMENTS_ROOT/$APPVHOST/.$DATETIME-tutum-stack-id"
+echo "  tutum stack update -f $DEPLOYMENTS_ROOT/$APPVHOST/docker-compose-production-tutum.yml \$(cat $DEPLOYMENTS_ROOT/$APPVHOST/.$DATETIME-tutum-stack-id)"
+echo "  tutum stack redeploy \$(cat $DEPLOYMENTS_ROOT/$APPVHOST/.$DATETIME-tutum-stack-id)"
 echo
 echo "  docker-compose --project-name $APPVHOST -f $DEPLOYMENTS_ROOT/$APPVHOST/docker-compose-production.yml up -d"
 echo
