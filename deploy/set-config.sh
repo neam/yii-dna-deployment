@@ -87,6 +87,7 @@ if [ "$?" == "0" ]; then
      | grep -v '=""' \
      | sed 's|export |    |' \
      | sed 's|="|: "|' \
+     | sed 's|\\\?|\?|' \
      > $DEPLOYMENTS_ROOT/$APPVHOST/.env.yml
 
     VIRTUAL_HOST_BASED_WEB_SERVICE_NAME=$(servicename "web${APPVHOST}${COMMITSHA}")

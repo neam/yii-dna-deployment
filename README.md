@@ -38,15 +38,20 @@ Prepare the common variables (both locally and on build server):
 
 Locally or on build server (not all commands are necessary on each incremental build, but are included for completeness):
 
-    source vendor/neam/yii-dna-deployment/deploy/prepare.sh
     stack/src/git-pull-recursive.sh
+    source vendor/neam/yii-dna-deployment/deploy/prepare.sh
     docker-compose pull
-    docker-compose up -d
     vendor/bin/docker-stack build-directory-sync
     cd ../$(basename $(pwd))-build/
+    stack/src/set-writable-local.sh
+    docker-compose up -d
     docker-compose run builder stack/src/reset-vendor.sh
     docker-compose run -e PREFER=dist builder stack/src/install-deps.sh
     docker-compose run builder stack/src/build.sh
+    stack/shell.sh # and then bin/reset-db.sh --force-s3-sync
+    docker-stack local url
+    # <-- generate assets here
+    # build
     vendor/neam/yii-dna-deployment/deploy/build.sh
     cd -
 
