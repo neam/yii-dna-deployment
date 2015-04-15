@@ -19,7 +19,7 @@ echo 'ssh -p $SSH_PORT root@$SSH_FQDN'
 echo
 echo "When connected:"
 echo "apt-get update && apt-get install git-core"
-echo "git clone --recursive $REPO /app"
+echo "git clone --recursive $PROJECT_GIT_REPO /app"
 echo "git checkout "$COMMITSHA
 echo "PREFER=dist stack/src/install-deps.sh"
 echo "source /.env"
