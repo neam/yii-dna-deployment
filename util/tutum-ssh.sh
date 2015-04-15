@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -x
+
 export DEPLOYMENT_DIR="$DEPLOYMENTS_ROOT/$APPVHOST/$COMMITSHA"
 cd "$DEPLOYMENT_DIR"
 
