@@ -42,7 +42,8 @@ trap 'echo "Script error in $0 on or near line ${LINENO}"' ERR
 
 # create directory for deployment config
 
-mkdir -p "$DEPLOYMENTS_ROOT/$APPVHOST"
+export DEPLOYMENT_DIR="$DEPLOYMENTS_ROOT/$APPVHOST/$COMMITSHA"
+mkdir -p "$DEPLOYMENT_DIR"
 
 # export the current app config (making sure that the required config vars are set properly (tip: use your local secrets.php file to supply sensitive configuration values when deploying from locally)
 
@@ -51,7 +52,7 @@ export CONFIG_INCLUDE=vendor/neam/yii-dna-deployment/deploy/set-config.php
 echo
 echo 'Config for '$APPVHOST':'
 echo
-php vendor/neam/php-app-config/export.php > $DEPLOYMENTS_ROOT/$APPVHOST/.env
+php vendor/neam/php-app-config/export.php > $DEPLOYMENT_DIR/.env
 
 function servicename {
 
@@ -71,24 +72,24 @@ function servicename {
 }
 
 if [ "$?" == "0" ]; then
-    source $DEPLOYMENTS_ROOT/$APPVHOST/.env
+    source $DEPLOYMENT_DIR/.env
 
     # prepare stack yml
 
     cat stack/docker-compose-production.yml \
      | sed 's|%COMMITSHA%|'$COMMITSHA'|' \
-     | sed 's|%ENV_FILE_DIR%|'$DEPLOYMENTS_ROOT/$APPVHOST'|' \
+     | sed 's|%ENV_FILE_DIR%|'$DEPLOYMENT_DIR'|' \
      | sed 's|%APPVHOST%|'$APPVHOST'|' \
      | sed 's|%DEPLOY_STABILITY_TAG%|'$DEPLOY_STABILITY_TAG'|' \
      | sed 's|%VIRTUAL_HOST%|'$APPVHOST'|' \
-     > $DEPLOYMENTS_ROOT/$APPVHOST/docker-compose-production.yml
+     > $DEPLOYMENT_DIR/docker-compose-production.yml
 
-    cat $DEPLOYMENTS_ROOT/$APPVHOST/.env \
+    cat $DEPLOYMENT_DIR/.env \
      | grep -v '=""' \
      | sed 's|export |    |' \
      | sed 's|="|: "|' \
      | sed 's|\\\?|\?|' \
-     > $DEPLOYMENTS_ROOT/$APPVHOST/.env.yml
+     > $DEPLOYMENT_DIR/.env.yml
 
     VIRTUAL_HOST_BASED_WEB_SERVICE_NAME=$(servicename "web${APPVHOST}${COMMITSHA}")
 
@@ -98,13 +99,13 @@ if [ "$?" == "0" ]; then
      | sed 's|%DEPLOY_STABILITY_TAG%|'$DEPLOY_STABILITY_TAG'|' \
      | sed 's|%VIRTUAL_HOST%|'$APPVHOST'|' \
      | sed 's|%VIRTUAL_HOST_BASED_WEB_SERVICE_NAME%|'$VIRTUAL_HOST_BASED_WEB_SERVICE_NAME'|' \
-     > $DEPLOYMENTS_ROOT/$APPVHOST/docker-compose-production-tutum.yml
+     > $DEPLOYMENT_DIR/docker-compose-production-tutum.yml
 
-    sed -e '/ENVIRONMENT_YAML/ {' -e 'r '"$DEPLOYMENTS_ROOT/$APPVHOST/.env.yml" -e 'd' -e '}' -i '' $DEPLOYMENTS_ROOT/$APPVHOST/docker-compose-production-tutum.yml
+    sed -e '/ENVIRONMENT_YAML/ {' -e 'r '"$DEPLOYMENT_DIR/.env.yml" -e 'd' -e '}' -i '' $DEPLOYMENT_DIR/docker-compose-production-tutum.yml
 
 fi
 
-cat $DEPLOYMENTS_ROOT/$APPVHOST/.env
+cat $DEPLOYMENT_DIR/.env
 echo
 
 # prepare new db
@@ -119,13 +120,17 @@ echo 'If no errors are shown above, config is prepared for '$APPVHOST'. To build
 echo
 echo "  vendor/neam/yii-dna-deployment/deploy/build.sh"
 echo
-echo 'Then, run one of the following to deploy:'
+echo "Make sure these tutum credentials are used"
 echo
 echo "  export TUTUM_USER=\$TUTUM_USER"
 echo "  export TUTUM_APIKEY=\$TUTUM_APIKEY"
-echo "  tutum stack create --name=$DATETIME-$APPVHOST-$COMMITSHA -f $DEPLOYMENTS_ROOT/$APPVHOST/docker-compose-production-tutum.yml | tee $DEPLOYMENTS_ROOT/$APPVHOST/.tutum-stack-id-$COMMITSHA"
-echo "  tutum stack update -f $DEPLOYMENTS_ROOT/$APPVHOST/docker-compose-production-tutum.yml \$(cat $DEPLOYMENTS_ROOT/$APPVHOST/.tutum-stack-id-$COMMITSHA)"
-echo "  tutum stack redeploy \$(cat $DEPLOYMENTS_ROOT/$APPVHOST/.tutum-stack-id-$COMMITSHA)"
 echo
-echo "  docker-compose --project-name $APPVHOST -f $DEPLOYMENTS_ROOT/$APPVHOST/docker-compose-production.yml up -d"
+echo 'Then, run one of the following to deploy:'
+echo
+echo "  tutum stack create --name=$DATETIME-$APPVHOST-$COMMITSHA -f $DEPLOYMENT_DIR/docker-compose-production-tutum.yml | tee $DEPLOYMENT_DIR/.tutum-stack-id"
+echo
+echo "  tutum stack update -f $DEPLOYMENT_DIR/docker-compose-production-tutum.yml \$(cat $DEPLOYMENT_DIR/.tutum-stack-id)"
+echo "  tutum stack redeploy \$(cat $DEPLOYMENT_DIR/.tutum-stack-id)"
+echo
+echo "  docker-compose --project-name $APPVHOST -f $DEPLOYMENT_DIR/docker-compose-production.yml up -d"
 echo
