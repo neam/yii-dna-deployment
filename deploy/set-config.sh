@@ -42,7 +42,9 @@ trap 'echo "Script error in $0 on or near line ${LINENO}"' ERR
 
 # create directory for deployment config
 
-export DEPLOYMENT_DIR="$DEPLOYMENTS_ROOT/$APPVHOST/$COMMITSHA"
+DATETIME=$(date +"%Y-%m-%d_%H%M%S")
+export STACK_NAME="$DATETIME-$APPVHOST-$COMMITSHA"
+export DEPLOYMENT_DIR="$DEPLOYMENTS_ROOT/$STACK_NAME"
 mkdir -p "$DEPLOYMENT_DIR"
 
 # export the current app config (making sure that the required config vars are set properly (tip: use your local secrets.php file to supply sensitive configuration values when deploying from locally)
@@ -114,8 +116,6 @@ if [ "$DATABASE_HOST" == "" ]; then
     $script_path/../util/prepare-new-db.sh $APPVHOST
 fi
 
-DATETIME=$(date +"%Y-%m-%d_%H%M%S")
-
 echo 'If no errors are shown above, config is prepared for '$APPVHOST'. To build images and push to tutum registry:'
 echo
 echo "  vendor/neam/yii-dna-deployment/deploy/build.sh"
@@ -127,7 +127,7 @@ echo "  export TUTUM_APIKEY=\$TUTUM_APIKEY"
 echo
 echo 'Then, run one of the following to deploy:'
 echo
-echo "  tutum stack create --name=$DATETIME-$APPVHOST-$COMMITSHA -f $DEPLOYMENT_DIR/docker-compose-production-tutum.yml | tee $DEPLOYMENT_DIR/.tutum-stack-id"
+echo "  tutum stack create --name=$STACK_NAME -f $DEPLOYMENT_DIR/docker-compose-production-tutum.yml | tee $DEPLOYMENT_DIR/.tutum-stack-id"
 echo "  tutum stack start \$(cat $DEPLOYMENT_DIR/.tutum-stack-id)"
 echo
 echo "  tutum stack update -f $DEPLOYMENT_DIR/docker-compose-production-tutum.yml \$(cat $DEPLOYMENT_DIR/.tutum-stack-id)"

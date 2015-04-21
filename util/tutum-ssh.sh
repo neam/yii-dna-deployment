@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 
-export DEPLOYMENT_DIR="$DEPLOYMENTS_ROOT/$APPVHOST/$COMMITSHA"
+export STACK_NAME=$(ls $DEPLOYMENTS_ROOT/ | grep "'"-$APPVHOST-$COMMITSHA"'")
+if [ "$STACK_NAME" == "" ]; then
+  echo "No stack found at $DEPLOYMENTS_ROOT/<date>-$APPVHOST-$COMMITSHA/"
+  exit 1
+fi
+
+export DEPLOYMENT_DIR="$DEPLOYMENTS_ROOT/$STACK_NAME"
 cd "$DEPLOYMENT_DIR"
 
 STACK_ID=$(cat .tutum-stack-id)
