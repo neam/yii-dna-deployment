@@ -18,8 +18,10 @@ echo 'scp -r -P $SSH_PORT ~/.ssh/id_rsa root@$SSH_FQDN:/root/.ssh/id_rsa'
 echo 'ssh -p $SSH_PORT root@$SSH_FQDN'
 echo
 echo "When connected:"
-echo "apt-get update && apt-get install git-core"
-echo "git clone --recursive $PROJECT_GIT_REPO /app"
+echo "apt-get update && apt-get install -y -q git-core"
+echo "git clone --recursive \$PROJECT_GIT_REPO /app"
+echo "cd /app"
+echo "cp /.env .env"
 echo "git checkout "$COMMITSHA
 echo "PREFER=dist stack/src/install-deps.sh"
 echo "source /.env"

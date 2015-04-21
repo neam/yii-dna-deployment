@@ -41,6 +41,7 @@ Locally or on build server (not all commands are necessary on each incremental b
     stack/src/git-pull-recursive.sh
     source vendor/neam/yii-dna-deployment/deploy/prepare.sh
     docker-compose pull
+    stack/src/install-deps.sh
     vendor/bin/docker-stack build-directory-sync
     cd ../$(basename $(pwd))-build/
     stack/src/set-writable-local.sh
@@ -48,7 +49,9 @@ Locally or on build server (not all commands are necessary on each incremental b
     docker-compose run builder stack/src/reset-vendor.sh
     docker-compose run -e PREFER=dist builder stack/src/install-deps.sh
     docker-compose run builder stack/src/build.sh
-    stack/shell.sh # and then bin/reset-db.sh --force-s3-sync
+    stack/db-start.sh
+    # first, set DATA in .env
+    stack/shell.sh # and then bin/reset-db.sh --force-s3-sync   and bin/upload-current-media-as-public-files.sh
     docker-stack local url
     # <-- generate assets here
     # build
