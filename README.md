@@ -73,19 +73,22 @@ TODO: Find a way to perform this efficiently with zero downtime.
 
 ## Interact with deployment
  
-SSH into the worker:
+To SSH into the worker (replace `changeme` with the name of your stack that you want to interact with.):
 
-    $(vendor/neam/yii-dna-deployment/util/tutum-ssh.sh)
+    export STACK_NAME=changeme
+    source deployments/$STACK_NAME/.env
+    source deploy/prepare.sh
+    vendor/neam/yii-dna-deployment/util/tutum-ssh.sh
     
-Copy paste the contents of deployments/{relevant-deployment}/.env into the SSH session.
+This will print out commands for preparing you worker container.
 
-You can then perform any of the below tasks.
+Log in, follow the instructions and you should be able to perform any of the below tasks.
 
 ### Reset the database
  
 Reset the database:
 
-    /app/bin/reset-db.sh
+    vendor/neam/yii-dna-pre-release-testing/shell-scripts/reset-db.sh
 
 ### Upload current media files to s3 public files bucket
 
