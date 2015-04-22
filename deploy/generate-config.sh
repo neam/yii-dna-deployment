@@ -49,7 +49,7 @@ mkdir -p "$DEPLOYMENT_DIR"
 
 # export the current app config (making sure that the required config vars are set properly (tip: use your local secrets.php file to supply sensitive configuration values when deploying from locally)
 
-export CONFIG_INCLUDE=vendor/neam/yii-dna-deployment/deploy/set-config.php
+export CONFIG_INCLUDE=vendor/neam/yii-dna-deployment/deploy/generate-config.php
 
 echo
 echo 'Config for '$APPVHOST':'
