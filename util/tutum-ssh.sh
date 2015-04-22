@@ -1,9 +1,16 @@
 #!/usr/bin/env bash
 
-export STACK_NAME=$(ls $DEPLOYMENTS_ROOT/ | grep "'"-$APPVHOST-$COMMITSHA"'")
-if [ "$STACK_NAME" == "" ]; then
-  echo "No stack found at $DEPLOYMENTS_ROOT/<date>-$APPVHOST-$COMMITSHA/"
-  exit 1
+if [ "$1" == "" ]; then
+
+  # choose the latest stack
+  export STACK_NAME=$(ls $DEPLOYMENTS_ROOT/ | grep \\-$APPVHOST\\-$COMMITSHA | tail -n 1)
+  if [ "$STACK_NAME" == "" ]; then
+    echo "No stack found at $DEPLOYMENTS_ROOT/<date>-$APPVHOST-$COMMITSHA/"
+    exit 1
+  fi
+
+else
+  export STACK_NAME=$1
 fi
 
 export DEPLOYMENT_DIR="$DEPLOYMENTS_ROOT/$STACK_NAME"
