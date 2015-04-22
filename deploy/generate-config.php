@@ -15,6 +15,12 @@ $_ENV['CONFIG_INCLUDE'] = "config/paas/include.php";
 Config::expect("CONFIG_INCLUDE", $default = null, $required = true);
 Config::expect("ENV", $default = $deploymentEnvPath, $required = false);
 
+// Add config metadata
+
+Config::expect("BRANCH_TO_DEPLOY", $default = null, $required = true);
+Config::expect("PROJECT_GIT_REPO", $default = null, $required = true);
+Config::expect("COMMITSHA", $default = null, $required = true);
+
 // Loads sensitive (non-versioned) environment variables from .env to getenv(), $_ENV.
 //\Dotenv::makeMutable();
 //\Dotenv::load($project_root . '/' . $deploymentEnvPath);

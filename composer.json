@@ -14,7 +14,8 @@
     ],
     "bin": [
         "deploy/build.sh",
-        "deploy/set-config.sh",
+        "deploy/generate-config.sh",
+        "deploy/show-prepared.sh",
         "util/prepare-new-db.sh",
         "util/setup-db.sh",
         "util/setup-rackspace-cloud-db.sh",
