@@ -60,7 +60,7 @@ Locally or on build server (not all commands are necessary on each incremental b
 
 Locally:
 
-    vendor/neam/yii-dna-deployment/deploy/set-config.sh
+    vendor/neam/yii-dna-deployment/deploy/generate-config.sh
 
 Follow given instructions and run generated commands to deploy to Tutum cluster.
 
@@ -80,7 +80,7 @@ To SSH into the worker (replace `changeme` with the name of your stack that you 
     source deploy/prepare.sh
     vendor/neam/yii-dna-deployment/util/tutum-ssh.sh
     
-This will print out commands for preparing you worker container.
+This will print out commands that are to be used for preparing and connecting to the stack's worker container.
 
 Log in, follow the instructions and you should be able to perform any of the below tasks.
 
