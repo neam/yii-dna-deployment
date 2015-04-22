@@ -27,17 +27,29 @@ echo "Init and connect:"
 echo "export SSH_PORT=$SSH_PORT"
 echo "export SSH_FQDN=$SSH_FQDN"
 echo 'scp -r -P $SSH_PORT '$DEPLOYMENT_DIR'/.env root@$SSH_FQDN:/.env'
-echo 'scp -r -P $SSH_PORT ~/.ssh/id_rsa root@$SSH_FQDN:/root/.ssh/id_rsa'
+echo 'scp -r -P $SSH_PORT .files/'$DATA'/media/* root@$SSH_FQDN:/files/'$DATA'/media/'
+echo
+echo "Use local ssh keys:"
+echo "echo 'Host $SSH_FQDN' >> ~/.ssh/config"
+echo "echo '	ForwardAgent yes' >> ~/.ssh/config"
+echo
+echo "Connect:"
 echo 'ssh -p $SSH_PORT root@$SSH_FQDN'
 echo
 echo "When connected:"
+echo "source /.env"
+echo
+echo "# File permissions"
+echo "chown -R \$WEB_SERVER_POSIX_USER:\$WEB_SERVER_POSIX_GROUP /files"
+echo
+echo "# Be able to run commands like reset-db etc"
 echo "apt-get update && apt-get install -y -q git-core"
 echo "git clone --recursive \$PROJECT_GIT_REPO /app"
 echo "cd /app"
 echo "cp /.env .env"
 echo "git checkout "$COMMITSHA
 echo "PREFER=dist stack/src/install-deps.sh"
-echo "source /.env"
+echo "PREFER=source stack/src/install-deps.sh"
 echo
 echo "Then run commands"
 
