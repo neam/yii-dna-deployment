@@ -127,7 +127,7 @@ echo "  export TUTUM_APIKEY=\$TUTUM_APIKEY"
 echo
 echo 'Then, run one of the following to deploy:'
 echo
-echo "  tutum stack create --name=$STACK_NAME -f $DEPLOYMENT_DIR/docker-compose-production-tutum.yml | tee $DEPLOYMENT_DIR/.tutum-stack-id"
+echo "  tutum stack create --name=$STACK_NAME -f $DEPLOYMENT_DIR/docker-compose-production-tutum.yml | tee $DEPLOYMENT_DIR/.tutum-stack-id && \\"
 echo "  tutum stack start \$(cat $DEPLOYMENT_DIR/.tutum-stack-id)"
 echo
 echo "  tutum stack update -f $DEPLOYMENT_DIR/docker-compose-production-tutum.yml \$(cat $DEPLOYMENT_DIR/.tutum-stack-id)"
