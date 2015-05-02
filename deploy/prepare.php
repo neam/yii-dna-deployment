@@ -17,8 +17,16 @@ Config::expect("GRANULARITY", $default = "project-branch-specific", $required = 
 Config::expect("DEVELOPMENT_GA_TRACKING_ID", $default = "UA-XXXXXX-X", $required = strpos(Config::read("BRANCH_TO_DEPLOY"), "release/") !== false);
 Config::expect("PRODUCTION_GA_TRACKING_ID", $default = "UA-XXXXXX-X", $required = Config::read("BRANCH_TO_DEPLOY") === "master");
 
-Config::expect("DEVELOPMENT_SMTP_URL", $default = "", $required = Config::read("BRANCH_TO_DEPLOY") !== "master");
-Config::expect("PRODUCTION_SMTP_URL", $default = "", $required = Config::read("BRANCH_TO_DEPLOY") === "master");
+Config::expect("DEVELOPMENT_SMTP_HOST", $default = "", $required = Config::read("BRANCH_TO_DEPLOY") !== "master");
+Config::expect("DEVELOPMENT_SMTP_PORT", $default = "", $required = Config::read("BRANCH_TO_DEPLOY") !== "master");
+Config::expect("DEVELOPMENT_SMTP_USERNAME", $default = "", $required = false);
+Config::expect("DEVELOPMENT_SMTP_PASSWORD", $default = "", $required = false);
+Config::expect("DEVELOPMENT_SMTP_ENCRYPTION", $default = "", $required = false);
+Config::expect("PRODUCTION_SMTP_HOST", $default = "", $required = Config::read("BRANCH_TO_DEPLOY") === "master");
+Config::expect("PRODUCTION_SMTP_PORT", $default = "", $required = Config::read("BRANCH_TO_DEPLOY") === "master");
+Config::expect("PRODUCTION_SMTP_USERNAME", $default = "", $required = Config::read("BRANCH_TO_DEPLOY") === "master");
+Config::expect("PRODUCTION_SMTP_PASSWORD", $default = "", $required = Config::read("BRANCH_TO_DEPLOY") === "master");
+Config::expect("PRODUCTION_SMTP_ENCRYPTION", $default = "", $required = Config::read("BRANCH_TO_DEPLOY") === "master");
 
 Config::expect("DEV_RDS_HOST", $default = "", $required = true);
 Config::expect("PROD_RDS_HOST", $default = "", $required = true);
