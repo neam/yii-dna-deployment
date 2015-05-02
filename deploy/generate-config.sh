@@ -40,22 +40,6 @@ script_path=$(dirname $0)
 # Show script name and line number when errors occur to make errors easier to debug
 trap 'echo "Script error in $0 on or near line ${LINENO}"' ERR
 
-# create directory for deployment config
-
-DATETIME=$(date +"%Y-%m-%d_%H%M%S")
-export STACK_NAME="$DATETIME-$APPVHOST-$COMMITSHA"
-export DEPLOYMENT_DIR="$DEPLOYMENTS_ROOT/$STACK_NAME"
-mkdir -p "$DEPLOYMENT_DIR"
-
-# export the current app config (making sure that the required config vars are set properly (tip: use your local secrets.php file to supply sensitive configuration values when deploying from locally)
-
-export CONFIG_INCLUDE=vendor/neam/yii-dna-deployment/deploy/generate-config.php
-
-echo
-echo 'Config for '$APPVHOST':'
-echo
-php vendor/neam/php-app-config/export.php > $DEPLOYMENT_DIR/.env
-
 function servicename {
 
     local STR=$1
@@ -72,6 +56,22 @@ function servicename {
     echo "$STR"
 
 }
+
+# create directory for deployment config
+
+DATETIME=$(date +"%Y-%m-%d_%H%M%S")
+export STACK_NAME=$(servicename "$DATETIME-$APPVHOST-$COMMITSHA")
+export DEPLOYMENT_DIR="$DEPLOYMENTS_ROOT/$STACK_NAME"
+mkdir -p "$DEPLOYMENT_DIR"
+
+# export the current app config (making sure that the required config vars are set properly (tip: use your local secrets.php file to supply sensitive configuration values when deploying from locally)
+
+export CONFIG_INCLUDE=vendor/neam/yii-dna-deployment/deploy/generate-config.php
+
+echo
+echo 'Config for '$APPVHOST':'
+echo
+php vendor/neam/php-app-config/export.php > $DEPLOYMENT_DIR/.env
 
 if [ "$?" == "0" ]; then
     source $DEPLOYMENT_DIR/.env
