@@ -80,7 +80,7 @@ if [ "$?" == "0" ]; then
 
     cat stack/docker-compose-production.yml \
      | sed 's|%COMMITSHA%|'$COMMITSHA'|' \
-     | sed 's|%ENV_FILE_DIR%|'$DEPLOYMENT_DIR'|' \
+     | sed 's|%ENV_FILE_DIR%|.|' \
      | sed 's|%APPVHOST%|'$APPVHOST'|' \
      | sed 's|%DEPLOY_STABILITY_TAG%|'$DEPLOY_STABILITY_TAG'|' \
      | sed 's|%VIRTUAL_HOST%|'$APPVHOST'|' \
