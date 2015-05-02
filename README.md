@@ -21,6 +21,8 @@ Requires a compatible docker stack. Currently, the `debian-php-nginx.dna-project
 
 ## Deploy to Tutum cluster
 
+    brew install tutum
+
 To build and deploy on Tutum, first make sure that the required config vars are set properly in `deploy/config/secrets.php`.
 
 Set the data profile to deploy:
@@ -39,24 +41,38 @@ Prepare the common variables (both locally and on build server):
 Locally or on build server (not all commands are necessary on each incremental build, but are included for completeness):
 
     stack/src/git-pull-recursive.sh
+    export COMMITSHA=
     source vendor/neam/yii-dna-deployment/deploy/prepare.sh
     docker-compose pull
     stack/src/install-deps.sh
     vendor/bin/docker-stack build-directory-sync
     cd ../$(basename $(pwd))-build/
     stack/src/set-writable-local.sh
+    docker-compose rm -f
     docker-compose up -d
-    docker-compose run builder stack/src/reset-vendor.sh
+    docker-compose run builder stack/src/reset-vendor.sh # do not forget to compile assets if resetting vendor completely
     docker-compose run -e PREFER=dist builder stack/src/install-deps.sh
-    docker-compose run builder stack/src/build.sh
+    docker-compose run builder /project/$(basename $(pwd))/stack/src/build.sh
     stack/db-start.sh
     # first, set DATA in .env
-    stack/shell.sh # and then bin/reset-db.sh --force-s3-sync   and bin/upload-current-media-as-public-files.sh
+    docker-stack local run worker /bin/bash bin/reset-db.sh --force-s3-sync
+    docker-stack local run worker /bin/bash bin/upload-current-files-to-cdn.sh
     docker-stack local url
     # <-- generate assets here
     # build
     vendor/neam/yii-dna-deployment/deploy/build.sh
     cd -
+    
+The commands required for an incremental update (ie the build directory already exists from an earlier deployment):
+
+    stack/src/git-pull-recursive.sh
+    export COMMITSHA=
+    source vendor/neam/yii-dna-deployment/deploy/prepare.sh
+    vendor/bin/docker-stack build-directory-sync
+    cd ../$(basename $(pwd))-build/
+    docker-compose run -e PREFER=dist builder stack/src/install-deps.sh
+    docker-compose run builder /project/$(basename $(pwd))/stack/src/build.sh
+    vendor/neam/yii-dna-deployment/deploy/build.sh
 
 Locally:
 
