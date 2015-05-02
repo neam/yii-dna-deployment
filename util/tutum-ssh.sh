@@ -43,7 +43,6 @@ echo "# File permissions"
 echo "chown -R \$WEB_SERVER_POSIX_USER:\$WEB_SERVER_POSIX_GROUP /files"
 echo
 echo "# Be able to run commands like reset-db etc"
-echo "apt-get update && apt-get install -y -q git-core"
 echo "git clone --recursive \$PROJECT_GIT_REPO /app"
 echo "cd /app"
 echo "cp /.env .env"
