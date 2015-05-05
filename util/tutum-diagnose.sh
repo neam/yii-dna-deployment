@@ -68,7 +68,8 @@ SSH_FQDN=$(cat .tutum-worker-container.json | jq -r '.link_variables.WORKER_ENV_
 WEB_PORT=$(cat .tutum-web-container.json | jq '.container_ports  | map(select(.inner_port == 80)) | .[].outer_port')
 WEB_FQDN=$(cat .tutum-web-container.json | jq '.link_variables' | grep '"WEB.*_ENV_TUTUM_NODE_FQDN' | sed 's/^/{/' | sed 's/,/}/' | grep -v '_\d_' | jq -r '.[]')
 PHPHAPROXY_STATS_PORT=$(cat .tutum-phphaproxy-container.json | jq '.container_ports  | map(select(.inner_port == 1936)) | .[].outer_port')
-PHPHAPROXY_STATS_FQDN=$(cat .tutum-phphaproxy-container.json | jq '.link_variables' | grep '"WEB.*_ENV_TUTUM_NODE_FQDN' | sed 's/^/{/' | sed 's/,/}/' | grep -v '_\d_' | jq -r '.[]')
+PHPHAPROXY_STATS_FQDN=$(cat .tutum-phphaproxy-container.json | jq '.link_variables' | grep '"PHPHAPROXY.*_ENV_TUTUM_NODE_FQDN' | sed 's/^/{/' | sed 's/,/}/' | grep -v '_\d_' | jq -r '.[]')
+PHPHAPROXY_STATS_AUTH=$(cat .tutum-phphaproxy-container.json | jq '.link_variables' | grep '"PHPHAPROXY.*_ENV_STATS_AUTH' | sed 's/^/{/' | sed 's/,/}/' | grep -v '_\d_' | jq -r '.[]')
 
 echo
 echo "# Health-checks for public frontend:"
@@ -82,8 +83,9 @@ echo "export WEB_FQDN=$WEB_FQDN"
 echo "stack/_util/health-checks.sh"
 echo
 echo "# Stats for second-level backend (PHP haproxy):"
-echo "export PHPHAPROXY_STATS_PORT=$WEB_PORT"
-echo "export PHPHAPROXY_STATS_FQDN=$WEB_FQDN"
+echo "export PHPHAPROXY_STATS_PORT=$PHPHAPROXY_STATS_PORT"
+echo "export PHPHAPROXY_STATS_FQDN=$PHPHAPROXY_STATS_FQDN"
+echo "export PHPHAPROXY_STATS_AUTH=$PHPHAPROXY_STATS_AUTH"
 echo 'open http://$PHPHAPROXY_STATS_FQDN:$PHPHAPROXY_STATS_PORT'
 echo
 exit 0

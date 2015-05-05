@@ -2,8 +2,25 @@
 
 if [ "$1" == "" ]; then
 
+  function servicename {
+
+      local STR=$1
+
+      # Permitted characters: [0-9,a-z,A-Z] (basic Latin letters, digits 0-9)
+      STR=${STR//\//}
+      STR=${STR//./}
+      STR=${STR//-/}
+      STR=${STR//_/}
+      STR="$(echo $STR | tr '[:upper:]' '[:lower:]')" # UPPERCASE to lowercase
+      # Max length 64 chars
+      STR=${STR:0:64}
+
+      echo "$STR"
+
+  }
+
   # choose the latest stack
-  export STACK_NAME=$(ls $DEPLOYMENTS_ROOT/ | grep \\-$APPVHOST\\-$COMMITSHA | tail -n 1)
+  export STACK_NAME=$(ls $DEPLOYMENTS_ROOT/ | grep $(servicename "-$APPVHOST-$COMMITSHA") | tail -n 1)
   if [ "$STACK_NAME" == "" ]; then
     echo "No stack found at $DEPLOYMENTS_ROOT/<date>-$APPVHOST-$COMMITSHA/"
     exit 1
