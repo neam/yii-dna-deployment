@@ -1,4 +1,14 @@
 #!/usr/bin/env bash
+#set -x
+
+# fail on any error
+set -o errexit
+
+# Usage: deploy.sh <stackname>
+
+if [ "$DEPLOYMENTS_ROOT" == "" ]; then
+    DEPLOYMENTS_ROOT=deployments
+fi
 
 if [ "$1" == "" ]; then
 
@@ -22,12 +32,17 @@ if [ "$1" == "" ]; then
   # choose the latest stack
   export STACK_NAME=$(ls $DEPLOYMENTS_ROOT/ | grep $(servicename "-$APPVHOST-$COMMITSHA") | tail -n 1)
   if [ "$STACK_NAME" == "" ]; then
-    echo "No stack found at $DEPLOYMENTS_ROOT/<date>-$APPVHOST-$COMMITSHA/"
+    echo "No stack found at $DEPLOYMENTS_ROOT/"$(servicename "-$APPVHOST-$COMMITSHA")"/"
     exit 1
   fi
 
 else
-  export STACK_NAME=$1
+  if [ -d "$DEPLOYMENTS_ROOT/$1" ]; then
+    export STACK_NAME=$1
+  fi
+  if [ -d "$1" ]; then
+    export STACK_NAME=$(basename $1)
+  fi
 fi
 
 export DEPLOYMENT_DIR="$DEPLOYMENTS_ROOT/$STACK_NAME"

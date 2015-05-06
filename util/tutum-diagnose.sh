@@ -4,19 +4,45 @@
 # fail on any error
 set -o errexit
 
-DEPLOYMENTS_ROOT=deployments
+# Usage: deploy.sh <stackname>
+
+if [ "$DEPLOYMENTS_ROOT" == "" ]; then
+    DEPLOYMENTS_ROOT=deployments
+fi
 
 if [ "$1" == "" ]; then
 
+  function servicename {
+
+      local STR=$1
+
+      # Permitted characters: [0-9,a-z,A-Z] (basic Latin letters, digits 0-9)
+      STR=${STR//\//}
+      STR=${STR//./}
+      STR=${STR//-/}
+      STR=${STR//_/}
+      STR="$(echo $STR | tr '[:upper:]' '[:lower:]')" # UPPERCASE to lowercase
+      # Max length 64 chars
+      STR=${STR:0:64}
+
+      echo "$STR"
+
+  }
+
   # choose the latest stack
-  export STACK_NAME=$(ls $DEPLOYMENTS_ROOT/ | grep \\-$APPVHOST\\-$COMMITSHA | tail -n 1)
+  export STACK_NAME=$(ls $DEPLOYMENTS_ROOT/ | grep $(servicename "-$APPVHOST-$COMMITSHA") | tail -n 1)
   if [ "$STACK_NAME" == "" ]; then
-    echo "No stack found at $DEPLOYMENTS_ROOT/<date>-$APPVHOST-$COMMITSHA/"
+    echo "No stack found at $DEPLOYMENTS_ROOT/"$(servicename "-$APPVHOST-$COMMITSHA")"/"
     exit 1
   fi
 
 else
-  export STACK_NAME=$1
+  if [ -d "$DEPLOYMENTS_ROOT/$1" ]; then
+    export STACK_NAME=$1
+  fi
+  if [ -d "$1" ]; then
+    export STACK_NAME=$(basename $1)
+  fi
 fi
 
 export DEPLOYMENT_DIR="$DEPLOYMENTS_ROOT/$STACK_NAME"
