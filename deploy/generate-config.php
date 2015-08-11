@@ -6,12 +6,12 @@ namespace neam\bootstrap;
 
 require(dirname(
         __FILE__
-    ) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'paas' . DIRECTORY_SEPARATOR . 'include.php');
+    ) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'remote' . DIRECTORY_SEPARATOR . 'include.php');
 
 // Add deployment-only overrides
 
 $deploymentEnvPath = "deployments/" . Config::read("APPVHOST");
-$_ENV['CONFIG_INCLUDE'] = "config/paas/include.php";
+$_ENV['CONFIG_INCLUDE'] = "config/remote/include.php";
 Config::expect("CONFIG_INCLUDE", $default = null, $required = true);
 Config::expect("ENV", $default = $deploymentEnvPath, $required = false);
 
