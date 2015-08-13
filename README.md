@@ -52,14 +52,29 @@ Locally or on build server (not all commands are necessary on each incremental b
     docker-compose up -d
     docker-compose run builder stack/src/reset-vendor.sh # do not forget to compile assets if resetting vendor completely
     docker-compose run -e PREFER=dist builder stack/src/install-deps.sh
-    docker-compose run builder /project/$(basename $(pwd))/stack/src/build.sh
+    docker-compose run builder /project/$(basename $(pwd))/stack/src/build.sh # takes 1-2 minutes
+
+Set up a temporary deployment on the build server:
+    
+    docker-compose rm --force
+    docker-compose up -d
+    echo "DATA=$DATA" >> .env
     stack/db-start.sh
-    # first, set DATA in .env
     docker-stack local run worker /bin/bash bin/reset-db.sh --force-s3-sync
+    stack/src/set-writable-local.sh
+
+Upload the media files to cdn:
+
     docker-stack local run worker /bin/bash bin/upload-current-files-to-cdn.sh
+
+Now we need to test the build and generated backend assets (done automatically by visiting the backend):
+
     docker-stack local url
-    # <-- generate assets here
-    # build
+
+Now, generate assets that are not versioned but need to be part of the deployed image.
+
+Then build and push the source code to tutum:
+    
     vendor/neam/yii-dna-deployment/deploy/build.sh
     cd -
     
@@ -87,18 +102,25 @@ At this stage the stack is prepared and runs the yii application, but if this is
 Link the router service to the new stack's `web` service and redeploy the router service.
 TODO: Find a way to perform this efficiently with zero downtime.
 
-## Interact with deployment
- 
-To SSH into the worker (replace `changeme` with the name of your stack that you want to interact with.):
+## Running worker commands in an already deployed stack
+
+List available stacks:
+
+    tutum stack list
+
+To access a shell in the running stack's containers (replace `changeme` with the name of your stack that you want to interact with):
 
     export STACK_NAME=changeme
-    source deployments/$STACK_NAME/.env
-    source deploy/prepare.sh
-    vendor/neam/yii-dna-deployment/util/tutum-ssh.sh
-    
-This will print out commands that are to be used for preparing and connecting to the stack's worker container.
+    export DATA=changeme
+    source vendor/neam/yii-dna-deployment/deploy/prepare.sh
+    vendor/neam/yii-dna-deployment/util/tutum-shell.sh $STACK_NAME
 
-Log in, follow the instructions and you should be able to perform any of the below tasks.
+Then, when connected:
+
+    cd /app
+    source .env
+
+Now, you can run commands inside the container (examples below).
 
 ### Reset the database
  
