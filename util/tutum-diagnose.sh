@@ -54,7 +54,7 @@ echo
 echo "# To replace the stack with a clone:"
 DATETIME=$(date +"%Y%m%d%H%M%S")
 echo "  cp $DEPLOYMENT_DIR/.tutum-stack-id $DEPLOYMENT_DIR/.tutum-stack-id.bak.$DATETIME"
-echo "  tutum stack create --name=${STACK_NAME}clone{$DATETIME} -f $DEPLOYMENT_DIR/docker-compose-production-tutum.yml | tee $DEPLOYMENT_DIR/.tutum-stack-id && \\"
+echo "  tutum stack create --name=${STACK_NAME}clone${DATETIME} -f $DEPLOYMENT_DIR/docker-compose-production-tutum.yml | tee $DEPLOYMENT_DIR/.tutum-stack-id && \\"
 echo "  tutum stack start \$(cat $DEPLOYMENT_DIR/.tutum-stack-id)"
 echo
 echo "# To deploy a new stack with the same source code:"
@@ -73,29 +73,36 @@ if [ "$(cat .tutum-stack.json | jq -r '.state')" == "Terminated" ]; then
 fi
 
 echo
-echo "# The stack's non-public containers are running on the following nodes:"
-cat .tutum-stack.json | jq '.services' | grep _ENV_TUTUM_NODE_FQDN | grep -v '"key"' | grep '_\d_' | sed 's/^/{/' | sed 's/,/}/' | jq -s add | tee .tutum-containers-nodes
-echo
-echo "# To ssh into the tutum nodes and run further diagnostics:"
-cat .tutum-containers-nodes | jq -r '.[]' | sort -u | sed 's/^/ssh root@/'
-echo
-echo "# Or, using mosh"
-cat .tutum-containers-nodes | jq -r '.[]' | sort -u | sed 's/^/mosh root@/'
+echo "# The stack's non-public containers:"
+tutum container ps | grep $STACK_NAME | tee .tutum-containers
 
-WORKER_CONTAINER_ID=$(cat .tutum-stack.json | jq '.services | map(select(.name == "worker"))' | jq -r '.[0].containers[0]' | awk -F  "/" '{print $5}')
-tutum container inspect $WORKER_CONTAINER_ID > .tutum-worker-container.json
-WEB_CONTAINER_ID=$(cat .tutum-stack.json | jq '.services | map(select(.run_command == "/app/stack/nginx/run.sh"))' | jq -r '.[0].containers[0]' | awk -F  "/" '{print $5}')
+echo
+echo "# To open a shell into the stack's non-public containers:"
+cat .tutum-containers | awk '{ print "tutum exec " $2 " # (" $1 ")"  }'
+
+# Commented since broken
+#echo
+#echo "# The stack's non-public containers are running on the following nodes:"
+#set -x
+#cat .tutum-stack.json | jq '.services' | grep _ENV_TUTUM_NODE_FQDN | grep -v '"key"' | grep '_\d_' | sed 's/^/{/' | sed 's/,/}/' | jq -s add | tee .tutum-containers-nodes
+#echo
+#echo "# To ssh into the tutum nodes and run further diagnostics:"
+#cat .tutum-containers-nodes | jq -r '.[]' | sort -u | sed 's/^/ssh root@/'
+#echo
+#echo "# Or, using mosh"
+#cat .tutum-containers-nodes | jq -r '.[]' | sort -u | sed 's/^/mosh root@/'
+
+WEB_CONTAINER_ID=$(cat .tutum-containers | grep ^web | awk '{ print $2  }')
 tutum container inspect $WEB_CONTAINER_ID > .tutum-web-container.json
-PHPHAPROXY_CONTAINER_ID=$(cat .tutum-stack.json | jq '.services | map(select(.name == "phphaproxy"))' | jq -r '.[0].containers[0]' | awk -F  "/" '{print $5}')
+PHPHAPROXY_CONTAINER_ID=$(cat .tutum-containers | grep ^phphaproxy | awk '{ print $2  }')
 tutum container inspect $PHPHAPROXY_CONTAINER_ID > .tutum-phphaproxy-container.json
 
-SSH_PORT=$(cat .tutum-worker-container.json | jq '.container_ports  | map(select(.inner_port == 22)) | .[].outer_port')
-SSH_FQDN=$(cat .tutum-worker-container.json | jq -r '.link_variables.WORKER_ENV_TUTUM_NODE_FQDN')
 WEB_PORT=$(cat .tutum-web-container.json | jq '.container_ports  | map(select(.inner_port == 80)) | .[].outer_port')
 WEB_FQDN=$(cat .tutum-web-container.json | jq '.link_variables' | grep '"WEB.*_ENV_TUTUM_NODE_FQDN' | sed 's/^/{/' | sed 's/,/}/' | grep -v '_\d_' | jq -r '.[]')
-PHPHAPROXY_STATS_PORT=$(cat .tutum-phphaproxy-container.json | jq '.container_ports  | map(select(.inner_port == 1936)) | .[].outer_port')
+export INNER_STATS_PORT=8088 # use 1936 later
+PHPHAPROXY_STATS_PORT=$(cat .tutum-phphaproxy-container.json | jq '.container_ports  | map(select(.inner_port == '$INNER_STATS_PORT')) | .[].outer_port')
 PHPHAPROXY_STATS_FQDN=$(cat .tutum-phphaproxy-container.json | jq '.link_variables' | grep '"PHPHAPROXY.*_ENV_TUTUM_NODE_FQDN' | sed 's/^/{/' | sed 's/,/}/' | grep -v '_\d_' | jq -r '.[]')
-PHPHAPROXY_STATS_AUTH=$(cat .tutum-phphaproxy-container.json | jq '.link_variables' | grep '"PHPHAPROXY.*_ENV_STATS_AUTH' | sed 's/^/{/' | sed 's/,/}/' | grep -v '_\d_' | jq -r '.[]')
+PHPHAPROXY_STATS_AUTH=$(cat .tutum-phphaproxy-container.json | jq '.link_variables' | grep '"PHPHAPROXY.*_ENV_STATS_AUTH' | sed 's/^/{/' | sed 's/,//' | sed 's/$/}/' | grep -v '_\d_' | jq -r '.[]')
 
 echo
 echo "# Health-checks for public frontend:"
@@ -112,6 +119,6 @@ echo "# Stats for second-level backend (PHP haproxy):"
 echo "export PHPHAPROXY_STATS_PORT=$PHPHAPROXY_STATS_PORT"
 echo "export PHPHAPROXY_STATS_FQDN=$PHPHAPROXY_STATS_FQDN"
 echo "export PHPHAPROXY_STATS_AUTH=$PHPHAPROXY_STATS_AUTH"
-echo 'open http://$PHPHAPROXY_STATS_FQDN:$PHPHAPROXY_STATS_PORT'
+echo 'open http://$PHPHAPROXY_STATS_AUTH@$PHPHAPROXY_STATS_FQDN:$PHPHAPROXY_STATS_PORT'
 echo
 exit 0
