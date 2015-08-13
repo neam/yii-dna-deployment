@@ -13,17 +13,26 @@
         }
     ],
     "bin": [
-        "app-buildstep-hook.sh",
-        "configure-persistent-p3media.sh",
-        "configure-s3cmd.sh",
-        "dokku-reset-db.sh",
-        "dokku-run-tests.sh",
-        "install-s3cmd.sh",
-        "root-project-buildstep-hook.sh",
-        "update-buildpacks-file-revision.sh"
+        "deploy/build.sh",
+        "deploy/generate-config.sh",
+        "deploy/show-prepared.sh",
+        "util/prepare-new-db.sh",
+        "util/setup-db.sh",
+        "util/setup-rackspace-cloud-db.sh",
+        "util/tutum-ssh.sh",
+        "util/upload-current-media-as-public-files.sh",
+        "dokku-legacy/configure-s3cmd.sh",
+        "dokku-legacy/install-s3cmd.sh",
+        "dokku-legacy/app-buildstep-hook.sh",
+        "dokku-legacy/configure-persistent-p3media.sh",
+        "dokku-legacy/dokku-reset-db.sh",
+        "dokku-legacy/dokku-run-tests.sh",
+        "dokku-legacy/root-project-buildstep-hook.sh",
+        "dokku-legacy/update-buildpacks-file-revision.sh"
     ],
     "require": {
         "php": ">=5.3.0",
+        "neam/docker-stack": "dev-develop",
         "neam/yii-dna-pre-release-testing": "dev-develop",
         "neam/yii-dna-test-framework": "dev-develop",
         "neam/php-app-config": "dev-develop"

@@ -1,6 +1,6 @@
-[submodule "dokku-host-provisioning"]
+[submodule "dokku-legacy/dokku-host-provisioning"]
 	path = dokku-host-provisioning
 	url = https://github.com/neam/dokku-host-provisioning.git
-[submodule "appsdeck-buildpack-php"]
-	path = appsdeck-buildpack-php
+[submodule "dokku-legacy/appsdeck-buildpack-php"]
+	path = dokku-legacy/appsdeck-buildpack-php
 	url = https://github.com/neam/appsdeck-buildpack-php.git
