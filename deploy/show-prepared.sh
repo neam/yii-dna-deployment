@@ -23,5 +23,6 @@ echo
 echo "Necessary for build and push:"
 echo "export DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_USER"
 echo "export TUTUM_USER=$TUTUM_USER"
+echo "export REPO=$REPO"
 echo "export COMMITSHA=$COMMITSHA"
 echo
