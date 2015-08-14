@@ -78,7 +78,7 @@ tutum container ps | grep $STACK_NAME | tee .tutum-containers
 
 echo
 echo "# To open a shell into the stack's non-public containers:"
-cat .tutum-containers | grep -v Terminated | awk '{ print "tutum exec " $2 " # (" $1 ")"  }'
+cat .tutum-containers | grep -v Terminated | awk '{ print "tutum exec " $2 " /bin/bash # (" $1 ")"  }'
 
 # Commented since broken
 #echo
