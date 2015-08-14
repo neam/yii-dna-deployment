@@ -51,7 +51,7 @@ cd "$DEPLOYMENT_DIR"
 source .env
 
 echo
-echo "# To replace the stack with a clone:"
+echo "# To launch a clone of the stack (in order to then terminate/replace the original stack):"
 DATETIME=$(date +"%Y%m%d%H%M%S")
 echo "  cp $DEPLOYMENT_DIR/.tutum-stack-id $DEPLOYMENT_DIR/.tutum-stack-id.bak.$DATETIME"
 echo "  tutum stack create --name=${STACK_NAME}clone${DATETIME} -f $DEPLOYMENT_DIR/docker-compose-production-tutum.yml | tee $DEPLOYMENT_DIR/.tutum-stack-id && \\"
@@ -78,7 +78,7 @@ tutum container ps | grep $STACK_NAME | tee .tutum-containers
 
 echo
 echo "# To open a shell into the stack's non-public containers:"
-cat .tutum-containers | awk '{ print "tutum exec " $2 " # (" $1 ")"  }'
+cat .tutum-containers | grep -v Terminated | awk '{ print "tutum exec " $2 " # (" $1 ")"  }'
 
 # Commented since broken
 #echo
@@ -92,9 +92,9 @@ cat .tutum-containers | awk '{ print "tutum exec " $2 " # (" $1 ")"  }'
 #echo "# Or, using mosh"
 #cat .tutum-containers-nodes | jq -r '.[]' | sort -u | sed 's/^/mosh root@/'
 
-WEB_CONTAINER_ID=$(cat .tutum-containers | grep ^web | awk '{ print $2  }')
+WEB_CONTAINER_ID=$(cat .tutum-containers | grep -v Terminated | grep ^web | awk '{ print $2  }')
 tutum container inspect $WEB_CONTAINER_ID > .tutum-web-container.json
-PHPHAPROXY_CONTAINER_ID=$(cat .tutum-containers | grep ^phphaproxy | awk '{ print $2  }')
+PHPHAPROXY_CONTAINER_ID=$(cat .tutum-containers | grep -v Terminated | grep ^phphaproxy | awk '{ print $2  }')
 tutum container inspect $PHPHAPROXY_CONTAINER_ID > .tutum-phphaproxy-container.json
 
 WEB_PORT=$(cat .tutum-web-container.json | jq '.container_ports  | map(select(.inner_port == 80)) | .[].outer_port')
