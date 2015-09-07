@@ -30,7 +30,7 @@
     if [ "$?" == "0" ]; then
 
         source /tmp/php-app-config.sh
-        source $DRONE_BUILD_DIR/set-deployment-target.inc.sh
+        source $BUILD_DIR/set-deployment-target.inc.sh
         export APPNAME=$WEB_APPNAME
         export APPVHOST=$WEB_HOST
 
