@@ -19,7 +19,7 @@
         "util/prepare-new-db.sh",
         "util/setup-db.sh",
         "util/setup-rackspace-cloud-db.sh",
-        "util/tutum-ssh.sh",
+        "util/tutum-shell.sh",
         "util/upload-current-media-as-public-files.sh",
         "dokku-legacy/configure-s3cmd.sh",
         "dokku-legacy/install-s3cmd.sh",
@@ -32,10 +32,10 @@
     ],
     "require": {
         "php": ">=5.3.0",
-        "neam/docker-stack": "dev-develop",
-        "neam/yii-dna-pre-release-testing": "dev-develop",
-        "neam/yii-dna-test-framework": "dev-develop",
-        "neam/php-app-config": "dev-develop"
+        "neam/docker-stack": "*@dev",
+        "neam/yii-dna-pre-release-testing": "*@dev",
+        "neam/yii-dna-test-framework": "*@dev",
+        "neam/php-app-config": "*@dev"
     },
     "require-dev": {
     }
