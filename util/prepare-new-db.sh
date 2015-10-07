@@ -23,7 +23,7 @@ function dbusername {
     local STR=$1
 
     # Hash to avoid username collisions
-    STR=$(printf "%s" "$STR" | md5)
+    STR=$(printf "%s" "$STR" | md5sum)
     # Max length 16 chars
     STR=${STR:0:16}
 
