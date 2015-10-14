@@ -21,7 +21,7 @@ $_ENV["USER_DATA_BACKUP_UPLOADERS_SECRET"] = "";
 $_ENV["PUBLIC_FILE_UPLOADERS_ACCESS_KEY"] = "";
 $_ENV["PUBLIC_FILE_UPLOADERS_SECRET"] = "";
 $_ENV["PUBLIC_FILES_S3_REGION"] = "us-standard";
-$_ENV["PUBLIC_FILES_S3_PATH"] = "/m/" . Config::read("APPVHOST") . "/";
+$_ENV["PUBLIC_FILES_S3_PATH"] = "/m/" . Config::read("APPVHOST", null, $required=true) . "/";
 $_ENV["CDN_PATH_HTTP"] = "http://static.example.com" . $_ENV["PUBLIC_FILES_S3_PATH"];
 $_ENV["CDN_PATH_HTTPS"] = "https://static.example.com" . $_ENV["PUBLIC_FILES_S3_PATH"];
 
@@ -46,8 +46,9 @@ $_ENV["PRODUCTION_SMTP_ENCRYPTION"] = "tls";
 
 $_ENV["FILEPICKER_API_KEY"] = "";
 
-$_ENV["AUTH0_CLIENT_ID"] = "";
-$_ENV["AUTH0_CLIENT_SECRET"] = "";
+$_ENV["AUTH0_APPS"] = "";
+$_ENV["AUTH0_CLIENT_IDS"] = "";
+$_ENV["AUTH0_CLIENT_SECRETS"] = "";
 $_ENV["CORS_ACL_ORIGIN_HOSTS"] = "localhost:9000,app.example.com";
 
 $_ENV["DEVELOPMENT_GA_TRACKING_ID"] = "";
@@ -76,30 +77,34 @@ if (Config::read("DEPLOY_STABILITY_TAG") === "prod") {
     $_ENV["GA_TRACKING_ID"] = $_ENV["DEVELOPMENT_GA_TRACKING_ID"];
 }
 
-// Amazon RDS administration
+// Amazon RDS root db access details
+if (Config::read("DEPLOY_STABILITY_TAG") === "dev") {
+    $_ENV["RDS_HOST"] = $_ENV["DEV_RDS_HOST"];
+    $_ENV["DATABASE_ROOT_USER"] = $_ENV["DEV_RDS_HOST_ROOT_USER"];
+    $_ENV["DATABASE_ROOT_PASSWORD"] = $_ENV["DEV_RDS_HOST_ROOT_PASSWORD"];
+} elseif (Config::read("DEPLOY_STABILITY_TAG") === "demo") {
+    $_ENV["RDS_HOST"] = $_ENV["DEMO_RDS_HOST"];
+    $_ENV["DATABASE_ROOT_USER"] = $_ENV["DEMO_RDS_HOST_ROOT_USER"];
+    $_ENV["DATABASE_ROOT_PASSWORD"] = $_ENV["DEMO_RDS_HOST_ROOT_PASSWORD"];
+} elseif (Config::read("DEPLOY_STABILITY_TAG") === "prod") {
+    $_ENV["RDS_HOST"] = "";
+    $_ENV["DATABASE_ROOT_USER"] = $_ENV["PROD_RDS_HOST_ROOT_USER"];
+    $_ENV["DATABASE_ROOT_PASSWORD"] = $_ENV["PROD_RDS_HOST_ROOT_PASSWORD"];
+}
 
-$_ENV["DEV_RDS_HOST"] = "";
-$_ENV["PROD_RDS_HOST"] = "";
-$_ENV["DATABASE_ROOT_USER"] = "";
-$_ENV["DATABASE_ROOT_PASSWORD"] = "";
+// Amazon RDS db access details
 
-// Amazon RDS app access details
-
-$app = Config::read("APPVHOST");
+$app = Config::read("APPVHOST", null, $required=true);
 switch ($app) {
     case "develop-foo.example.com":
         $_ENV["DATABASE_HOST"] = "";
         $_ENV["DATABASE_PORT"] = "";
-        $_ENV["DATABASE_USER"] = "";
-        $_ENV["DATABASE_NAME"] = "";
         $_ENV["DATABASE_PASSWORD"] = "";
         break;
     default:
         throw new Exception("Amazon RDS deploy database access credentials missing for app '{$app}'");
         $_ENV["DATABASE_HOST"] = "";
         $_ENV["DATABASE_PORT"] = "";
-        $_ENV["DATABASE_USER"] = "";
-        $_ENV["DATABASE_NAME"] = "";
         $_ENV["DATABASE_PASSWORD"] = "";
         break;
     case "";
