@@ -19,6 +19,7 @@ echo "export APPVHOST=$APPVHOST"
 echo "export APPNAME=$APPNAME"
 echo "export DEPLOY_STABILITY_TAG=$DEPLOY_STABILITY_TAG"
 echo "export TOPLEVEL_DOMAIN=$TOPLEVEL_DOMAIN"
+echo "export VIRTUAL_HOST_DATA_MAP=$VIRTUAL_HOST_DATA_MAP"
 echo
 echo "Necessary for build and push:"
 echo "export DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_USER"

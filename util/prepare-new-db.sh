@@ -8,6 +8,9 @@
 # - DEMO_RDS_HOST
 # - PROD_RDS_HOST
 
+# Note: To run this on OSX, md5sum needs to be available:
+# ln -s /sbin/md5 /usr/local/bin/md5sum
+
 # debug
 
 #set -x
@@ -57,9 +60,8 @@ function newdbpass {
 
 # Set database provider details
 if [[ "$APPVHOST" == *.local ]]; then
-    #docker-md-plugin
-    export DATABASE_HOST='$LOCAL_MOCK_DATABASE_HOST'
-    export DATABASE_PORT='$LOCAL_MOCK_DATABASE_PORT'
+    export DATABASE_HOST='localdb'
+    export DATABASE_PORT='3306'
 else
     if [ "$GRANULARITY" == "project-branch-commit-specific" ] || ([[ "$DRONE_BRANCH" != release* ]] && [[ "$DRONE_BRANCH" != hotfix* ]] && [ "$DRONE_BRANCH" != "master" ]); then
         #amazon-rds
@@ -79,31 +81,20 @@ else
     fi
 fi
 
-export NEW_DATABASE_USER=$(dbusername $APPVHOST)
-export NEW_DATABASE_NAME=$(dbname $APPVHOST)
-export NEW_DATABASE_PASSWORD=$(newdbpass)
+#export NEW_DATABASE_USER=$(dbusername $APPVHOST)
+#export NEW_DATABASE_NAME=$(dbname $APPVHOST)
+#export NEW_DATABASE_PASSWORD=$(newdbpass)
 
 if [[ "$APPVHOST" == *.local ]]; then
-    echo 'Adding the following to .'"$DATA"'.env:'
+    echo 'Adding the following to .env:'
     echo
-    echo 'DATABASE_HOST="'$DATABASE_HOST'"' | tee .$DATA.env
-    echo 'DATABASE_PORT="'$DATABASE_PORT'"' | tee -a .$DATA.env
-    echo 'DATABASE_USER="'$NEW_DATABASE_USER'"' | tee -a .$DATA.env
-    echo 'DATABASE_NAME="'$NEW_DATABASE_NAME'"' | tee -a .$DATA.env
-    echo 'DATABASE_PASSWORD="'$NEW_DATABASE_PASSWORD'"' | tee -a .$DATA.env
+    echo 'DATABASE_HOST="'$DATABASE_HOST'"' | tee .env
+    echo 'DATABASE_PORT="'$DATABASE_PORT'"' | tee -a .env
 else
     echo 'Obtain the access details from a team mate, or if this is a new deployment, add the following to deploy/config/secrets.php:'
     echo
     echo '    case "'$APPVHOST'":'
     echo '        $_ENV["DATABASE_HOST"] = "'$DATABASE_HOST'";'
     echo '        $_ENV["DATABASE_PORT"] = "'$DATABASE_PORT'";'
-    echo '        $_ENV["DATABASE_USER"] = "'$NEW_DATABASE_USER'";'
-    echo '        $_ENV["DATABASE_NAME"] = "'$NEW_DATABASE_NAME'";'
-    echo '        $_ENV["DATABASE_PASSWORD"] = "'$NEW_DATABASE_PASSWORD'";'
     echo '        break;'
 fi
-echo
-echo 'Then run the following to create the cloud database with these credentials:'
-echo
-echo "    vendor/neam/yii-dna-deployment/util/setup-db.sh $DATABASE_HOST $DATABASE_PORT $NEW_DATABASE_NAME $NEW_DATABASE_USER $NEW_DATABASE_PASSWORD"
-echo

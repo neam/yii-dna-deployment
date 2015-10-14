@@ -1,34 +1,6 @@
 #!/bin/bash
 
-# Script to deploy the cms (currently to Dokku) during continuous integration (sourced)
-
-# The following env vars needs to be set properly:
-# - DRONE_BUILD_DIR
-# - APPNAME
-# - APPVHOST
-#
-# ...along with the config to be set:
-# - USER_GENERATED_DATA_S3_BUCKET
-# - USER_DATA_BACKUP_UPLOADERS_ACCESS_KEY
-# - USER_DATA_BACKUP_UPLOADERS_SECRET
-# - PUBLIC_FILES_S3_BUCKET
-# - PUBLIC_FILE_UPLOADERS_ACCESS_KEY
-# - PUBLIC_FILE_UPLOADERS_SECRET
-# - COMPOSER_GITHUB_TOKEN
-# - SAUCE_USERNAME
-# - SAUCE_ACCESS_KEY
-# - NEW_RELIC_LICENSE_KEY
-# - SMTP_URL
-# - SENTRY_DSN
-# - FILEPICKER_API_KEY
-# - GA_TRACKING_ID
-# - COMMIT_MESSAGE
-# - BRANCH
-# - BRAND_HOME_URL
-# - CMS_APPNAME
-# - CMS_HOST
-# - CMS_CONFIG_ENVIRONMENT
-# - CMS_BASE_URL
+# Script to generate config for the 12-factor-app's tutum stack
 
 # debug
 
@@ -71,7 +43,9 @@ export CONFIG_INCLUDE=vendor/neam/yii-dna-deployment/deploy/generate-config.php
 echo
 echo 'Config for '$APPVHOST':'
 echo
-php vendor/neam/php-app-config/export.php > $DEPLOYMENT_DIR/.env
+
+# we ignore runtime-config which are set on the fly
+php vendor/neam/php-app-config/export.php | grep -v 'export DATABASE_USER=' | grep -v 'export DATA=' | grep -v 'export DATABASE_NAME=' > $DEPLOYMENT_DIR/.env
 
 if [ "$?" == "0" ]; then
     source $DEPLOYMENT_DIR/.env
@@ -120,6 +94,7 @@ if [ "$DATABASE_HOST" == "" ]; then
     $script_path/../util/prepare-new-db.sh $APPVHOST
 fi
 
+echo
 echo 'If no errors are shown above, config is prepared for '$APPVHOST'. To build images and push to tutum registry:'
 echo
 echo "  vendor/neam/yii-dna-deployment/deploy/build.sh"

@@ -4,12 +4,14 @@ namespace neam\bootstrap;
 
 use Exception;
 
-// Non-versioned secrets
+// Non-versioned secrets that are only required in the deploy prepare step
 
 $_ENV["TUTUM_USER"] = "";
 $_ENV["TUTUM_EMAIL"] = "";
 $_ENV["TUTUM_PASSWORD"] = "";
 $_ENV["TUTUM_APIKEY"] = "";
+
+// Non-versioned secrets that depend on production stability level
 
 $_ENV["DEVELOPMENT_SMTP_HOST"] = "mailcatcher";
 $_ENV["DEVELOPMENT_SMTP_PORT"] = "25";
@@ -26,10 +28,18 @@ $_ENV["PRODUCTION_SMTP_ENCRYPTION"] = "tls";
 $_ENV["DEVELOPMENT_GA_TRACKING_ID"] = "";
 $_ENV["PRODUCTION_GA_TRACKING_ID"] = "";
 
-// Amazon RDS administration
-$_ENV["DEV_RDS_HOST"] = "";
-$_ENV["PROD_RDS_HOST"] = "";
-$_ENV["DEV_RDS_HOST_ROOT_USER"] = "master";
-$_ENV["DEV_RDS_HOST_ROOT_PASSWORD"] = "";
-$_ENV["PROD_RDS_HOST_ROOT_USER"] = "master";
-$_ENV["PROD_RDS_HOST_ROOT_PASSWORD"] = "";
+$_ENV["DEV_DATABASE_HOST"] = "";
+$_ENV["DEV_DATABASE_PORT"] = "3306";
+$_ENV["DEV_DATABASE_HOST_TENANT_PASSWORD"] = "";
+$_ENV["DEV_DATABASE_HOST_ROOT_USER"] = "master";
+$_ENV["DEV_DATABASE_HOST_ROOT_PASSWORD"] = "";
+$_ENV["DEMO_DATABASE_HOST"] = "";
+$_ENV["DEMO_DATABASE_PORT"] = "3306";
+$_ENV["DEMO_DATABASE_HOST_TENANT_PASSWORD"] = "";
+$_ENV["DEMO_DATABASE_HOST_ROOT_USER"] = "master";
+$_ENV["DEMO_DATABASE_HOST_ROOT_PASSWORD"] = "";
+$_ENV["PROD_DATABASE_HOST"] = "";
+$_ENV["PROD_DATABASE_PORT"] = "3306";
+$_ENV["PROD_DATABASE_HOST_TENANT_PASSWORD"] = "";
+$_ENV["PROD_DATABASE_HOST_ROOT_USER"] = "master";
+$_ENV["PROD_DATABASE_HOST_ROOT_PASSWORD"] = "";
