@@ -2,8 +2,9 @@
 
 # Script to generate config for the 12-factor-app's tutum stack
 
-# debug
+set -e
 
+# debug
 #set -x
 
 # script path
@@ -25,6 +26,17 @@ function servicename {
     STR="$(echo $STR | tr '[:upper:]' '[:lower:]')" # UPPERCASE to lowercase
     # Max length 64 chars
     STR=${STR:0:64}
+
+    echo "$STR"
+
+}
+
+function sedescape {
+
+    local STR=$1
+
+    # Permitted characters: [0-9,a-z,A-Z] (basic Latin letters, digits 0-9)
+    STR="${STR/\./\.}"
 
     echo "$STR"
 
@@ -60,13 +72,13 @@ if [ "$?" == "0" ]; then
      | sed 's|%DEPLOY_STABILITY_TAG%|'$DEPLOY_STABILITY_TAG'|' \
      | sed 's|%TUTUM_USER%|'$TUTUM_USER'|' \
      | sed 's|%REPO%|'$REPO'|' \
-     | sed 's|%VIRTUAL_HOST%|'$APPVHOST'|' \
+     | sed 's|%VIRTUAL_HOST%|'"$(sedescape "$VIRTUAL_HOST")"'|' \
      > $DEPLOYMENT_DIR/docker-compose-production.yml
 
     cat $DEPLOYMENT_DIR/.env \
-     | grep -v '=""' \
+     | grep -v '='"''" \
      | sed 's|export |    |' \
-     | sed 's|="|: "|' \
+     | sed 's|='"'"'|: '"'"'|' \
      | sed 's|\\\?|\?|' \
      > $DEPLOYMENT_DIR/.env.yml
 
@@ -78,7 +90,7 @@ if [ "$?" == "0" ]; then
      | sed 's|%DEPLOY_STABILITY_TAG%|'$DEPLOY_STABILITY_TAG'|' \
      | sed 's|%TUTUM_USER%|'$TUTUM_USER'|' \
      | sed 's|%REPO%|'$REPO'|' \
-     | sed 's|%VIRTUAL_HOST%|'$APPVHOST'|' \
+     | sed 's|%VIRTUAL_HOST%|'"$(sedescape "$VIRTUAL_HOST")"'|' \
      | sed 's|%VIRTUAL_HOST_BASED_WEB_SERVICE_NAME%|'$VIRTUAL_HOST_BASED_WEB_SERVICE_NAME'|' \
      > $DEPLOYMENT_DIR/docker-compose-production-tutum.yml
 
