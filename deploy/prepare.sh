@@ -31,8 +31,6 @@
 
         source /tmp/php-app-config.sh
         source $BUILD_DIR/set-deployment-target.inc.sh
-        export APPNAME=$WEB_APPNAME
-        export APPVHOST=$WEB_HOST
 
         # show exported variables
         $BUILD_DIR/vendor/neam/yii-dna-deployment/deploy/show-prepared.sh
