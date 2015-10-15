@@ -18,6 +18,7 @@ function servicename {
 
     # Permitted characters: [0-9,a-z,A-Z] (basic Latin letters, digits 0-9)
     STR=${STR//\//}
+    STR=${STR//%/}
     STR=${STR//./}
     STR=${STR//-/}
     STR=${STR//_/}
