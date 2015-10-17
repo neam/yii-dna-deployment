@@ -31,18 +31,18 @@ Config::expect("PRODUCTION_SMTP_ENCRYPTION", $default = "", $required = true);
 Config::expect("DEV_DATABASE_HOST", $default = "", $required = true);
 Config::expect("DEV_DATABASE_PORT", $default = "", $required = true);
 Config::expect("DEV_DATABASE_PASSWORD", $default = "", $required = true);
-Config::expect("DEV_DATABASE_HOST_ROOT_USER", $default = "", $required = false);
-Config::expect("DEV_DATABASE_HOST_ROOT_PASSWORD", $default = "", $required = false);
+Config::expect("DEV_DATABASE_ROOT_USER", $default = "", $required = false);
+Config::expect("DEV_DATABASE_ROOT_PASSWORD", $default = "", $required = false);
 Config::expect("DEMO_DATABASE_HOST", $default = "", $required = false);
 Config::expect("DEMO_DATABASE_PORT", $default = "", $required = false);
 Config::expect("DEMO_DATABASE_PASSWORD", $default = "", $required = false);
-Config::expect("DEMO_DATABASE_HOST_ROOT_USER", $default = "", $required = false);
-Config::expect("DEMO_DATABASE_HOST_ROOT_PASSWORD", $default = "", $required = false);
+Config::expect("DEMO_DATABASE_ROOT_USER", $default = "", $required = false);
+Config::expect("DEMO_DATABASE_ROOT_PASSWORD", $default = "", $required = false);
 Config::expect("PROD_DATABASE_HOST", $default = "", $required = true);
 Config::expect("PROD_DATABASE_PORT", $default = "", $required = true);
 Config::expect("PROD_DATABASE_PASSWORD", $default = "", $required = true);
-Config::expect("PROD_DATABASE_HOST_ROOT_USER", $default = "", $required = false);
-Config::expect("PROD_DATABASE_HOST_ROOT_PASSWORD", $default = "", $required = false);
+Config::expect("PROD_DATABASE_ROOT_USER", $default = "", $required = false);
+Config::expect("PROD_DATABASE_ROOT_PASSWORD", $default = "", $required = false);
 
 // Necessary only during build/deploy process (not by app itself) - thus we require it here, but not for setting app config
 
