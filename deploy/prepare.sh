@@ -6,14 +6,22 @@
     export BUILD_DIR="$pwd"
     #echo "pwd=$pwd"
 
+    # default to multi-tenant deployment
+    if [ "$DATA" == "" ]; then
+        export DATA='%DATA%'
+    fi
+
+    # default to current branch
     if [ "$BRANCH_TO_DEPLOY" == "" ]; then
         export BRANCH_TO_DEPLOY=$(git symbolic-ref --short -q HEAD)
     fi
 
+    # default to current git repo
     if [ "$PROJECT_GIT_REPO" == "" ]; then
         export PROJECT_GIT_REPO=$(git config --get remote.origin.url)
     fi
 
+    # default to current commitsha
     if [ "$COMMITSHA" == "" ]; then
         export COMMITSHA=$(git rev-parse --verify --short=7 HEAD)
     fi
