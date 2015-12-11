@@ -20,15 +20,7 @@
         "util/setup-db.sh",
         "util/setup-rackspace-cloud-db.sh",
         "util/tutum-shell.sh",
-        "util/upload-current-media-as-public-files.sh",
-        "dokku-legacy/configure-s3cmd.sh",
-        "dokku-legacy/install-s3cmd.sh",
-        "dokku-legacy/app-buildstep-hook.sh",
-        "dokku-legacy/configure-persistent-p3media.sh",
-        "dokku-legacy/dokku-reset-db.sh",
-        "dokku-legacy/dokku-run-tests.sh",
-        "dokku-legacy/root-project-buildstep-hook.sh",
-        "dokku-legacy/update-buildpacks-file-revision.sh"
+        "util/upload-current-media-as-public-files.sh"
     ],
     "require": {
         "php": ">=5.3.0",
