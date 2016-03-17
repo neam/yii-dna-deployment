@@ -28,7 +28,7 @@ $_ENV["CDN_PATH_HTTPS"] = "https://static.example.com" . $_ENV["PUBLIC_FILES_S3_
 $_ENV["COMPOSER_GITHUB_TOKEN"] = "";
 $_ENV["NEW_RELIC_LICENSE_KEY"] = "";
 
-$_ENV["FILEPICKER_API_KEY"] = "";
+$_ENV["FILESTACK_API_KEY"] = "";
 
 $_ENV["AUTH0_APPS"] = "";
 $_ENV["AUTH0_CLIENT_IDS"] = "";
