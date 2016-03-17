@@ -112,24 +112,23 @@ if [ "$DATABASE_HOST" == "" ]; then
 fi
 
 echo
-echo 'Config is prepared for '$APPVHOST'. To build images and push to tutum registry:'
+echo 'Config is prepared for '$APPVHOST'.'
+echo
+echo 'If not already done, build images and push to tutum registry:'
 echo
 echo "  vendor/neam/yii-dna-deployment/deploy/build.sh"
 echo
-echo "Make sure these tutum credentials are used"
+echo 'To deploy to tutum:'
 echo
-echo "  export TUTUM_USER=\$TUTUM_USER"
-echo "  export TUTUM_APIKEY=\$TUTUM_APIKEY"
-echo
-echo 'Then, to deploy to tutum:'
-echo
+echo "  export TUTUM_USER=$TUTUM_USER"
+echo "  export TUTUM_APIKEY=$TUTUM_APIKEY"
 echo "  tutum stack create --name=$STACK_NAME -f $DEPLOYMENT_DIR/docker-compose-production-tutum.yml | tee $DEPLOYMENT_DIR/.tutum-stack-id && \\"
 echo "  tutum stack start \$(cat $DEPLOYMENT_DIR/.tutum-stack-id)"
-#echo
+echo
 #echo "  tutum stack update -f $DEPLOYMENT_DIR/docker-compose-production-tutum.yml \$(cat $DEPLOYMENT_DIR/.tutum-stack-id)"
 #echo "  tutum stack redeploy \$(cat $DEPLOYMENT_DIR/.tutum-stack-id)"
-echo
-echo 'To deploy to the current docker host:'
-echo
-echo "  docker-compose --project-name $APPVHOST -f $DEPLOYMENT_DIR/docker-compose-production.yml up -d"
-echo
+#echo
+#echo 'To deploy to the current docker host:'
+#echo
+#echo "  docker-compose --project-name $APPVHOST -f $DEPLOYMENT_DIR/docker-compose-production.yml up -d"
+#echo
