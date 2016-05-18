@@ -46,10 +46,10 @@ Config::expect("PROD_DATABASE_ROOT_PASSWORD", $default = "", $required = false);
 
 // Necessary only during build/deploy process (not by app itself) - thus we require it here, but not for setting app config
 
-Config::expect("TUTUM_USER", $default = null, $required = true);
-Config::expect("TUTUM_EMAIL", $default = null, $required = true);
-Config::expect("TUTUM_PASSWORD", $default = null, $required = true);
-Config::expect("TUTUM_APIKEY", $default = null, $required = true);
+Config::expect("DOCKERCLOUD_USER", $default = null, $required = true);
+Config::expect("DOCKERCLOUD_EMAIL", $default = null, $required = true);
+Config::expect("DOCKERCLOUD_PASSWORD", $default = null, $required = true);
+Config::expect("DOCKERCLOUD_APIKEY", $default = null, $required = true);
 
 // Include the secrets file containing non-versioned secrets
 

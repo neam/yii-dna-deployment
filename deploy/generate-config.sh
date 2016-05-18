@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script to generate config for the 12-factor-app's tutum stack
+# Script to generate config for the 12-factor-app's docker-cloud stack
 
 set -e
 
@@ -79,7 +79,7 @@ cat stack/docker-compose-production.yml \
  | sed 's|%ENV_FILE_DIR%|.|' \
  | sed 's|%APPVHOST%|'$APPVHOST'|' \
  | sed 's|%DEPLOY_STABILITY_TAG%|'$DEPLOY_STABILITY_TAG'|' \
- | sed 's|%TUTUM_USER%|'$TUTUM_USER'|' \
+ | sed 's|%DOCKERCLOUD_USER%|'$DOCKERCLOUD_USER'|' \
  | sed 's|%REPO%|'$REPO'|' \
  | sed 's|%VIRTUAL_HOST%|'"$(sedescape "$VIRTUAL_HOST")"'|' \
  > $DEPLOYMENT_DIR/docker-compose-production.yml
@@ -93,17 +93,17 @@ cat $DEPLOYMENT_DIR/.env \
 
 VIRTUAL_HOST_BASED_WEB_SERVICE_NAME=$(servicename "web${APPVHOST}${COMMITSHA}")
 
-cat stack/docker-compose-production-tutum.yml \
+cat stack/docker-compose-production-docker-cloud.yml \
  | sed 's|%COMMITSHA%|'$COMMITSHA'|' \
  | sed 's|%APPVHOST%|'$APPVHOST'|' \
  | sed 's|%DEPLOY_STABILITY_TAG%|'$DEPLOY_STABILITY_TAG'|' \
- | sed 's|%TUTUM_USER%|'$TUTUM_USER'|' \
+ | sed 's|%DOCKERCLOUD_USER%|'$DOCKERCLOUD_USER'|' \
  | sed 's|%REPO%|'$REPO'|' \
  | sed 's|%VIRTUAL_HOST%|'"$(sedescape "$VIRTUAL_HOST")"'|' \
  | sed 's|%VIRTUAL_HOST_BASED_WEB_SERVICE_NAME%|'$VIRTUAL_HOST_BASED_WEB_SERVICE_NAME'|' \
- > $DEPLOYMENT_DIR/docker-compose-production-tutum.yml
+ > $DEPLOYMENT_DIR/docker-compose-production-docker-cloud.yml
 
-sed -e '/ENVIRONMENT_YAML/ {' -e 'r '"$DEPLOYMENT_DIR/.env.yml" -e 'd' -e '}' -i '' $DEPLOYMENT_DIR/docker-compose-production-tutum.yml
+sed -e '/ENVIRONMENT_YAML/ {' -e 'r '"$DEPLOYMENT_DIR/.env.yml" -e 'd' -e '}' -i '' $DEPLOYMENT_DIR/docker-compose-production-docker-cloud.yml
 
 # prepare new db
 
@@ -114,19 +114,19 @@ fi
 echo
 echo 'Config is prepared for '$APPVHOST'.'
 echo
-echo 'If not already done, build images and push to tutum registry:'
+echo 'If not already done, build images and push to docker-cloud registry:'
 echo
 echo "  vendor/neam/yii-dna-deployment/deploy/build.sh"
 echo
-echo 'To deploy to tutum:'
+echo 'To deploy to docker-cloud:'
 echo
-echo "  export TUTUM_USER=$TUTUM_USER"
-echo "  export TUTUM_APIKEY=$TUTUM_APIKEY"
-echo "  tutum stack create --name=$STACK_NAME -f $DEPLOYMENT_DIR/docker-compose-production-tutum.yml | tee $DEPLOYMENT_DIR/.tutum-stack-id && \\"
-echo "  tutum stack start \$(cat $DEPLOYMENT_DIR/.tutum-stack-id)"
+echo "  export DOCKERCLOUD_USER=$DOCKERCLOUD_USER"
+echo "  export DOCKERCLOUD_APIKEY=$DOCKERCLOUD_APIKEY"
+echo "  docker-cloud stack create --name=$STACK_NAME -f $DEPLOYMENT_DIR/docker-compose-production-docker-cloud.yml | tee $DEPLOYMENT_DIR/.docker-cloud-stack-id && \\"
+echo "  docker-cloud stack start \$(cat $DEPLOYMENT_DIR/.docker-cloud-stack-id)"
 echo
-#echo "  tutum stack update -f $DEPLOYMENT_DIR/docker-compose-production-tutum.yml \$(cat $DEPLOYMENT_DIR/.tutum-stack-id)"
-#echo "  tutum stack redeploy \$(cat $DEPLOYMENT_DIR/.tutum-stack-id)"
+#echo "  docker-cloud stack update -f $DEPLOYMENT_DIR/docker-compose-production-docker-cloud.yml \$(cat $DEPLOYMENT_DIR/.docker-cloud-stack-id)"
+#echo "  docker-cloud stack redeploy \$(cat $DEPLOYMENT_DIR/.docker-cloud-stack-id)"
 #echo
 #echo 'To deploy to the current docker host:'
 #echo

@@ -53,9 +53,9 @@ source .env
 echo
 echo "# To launch a clone of the stack (in order to then terminate/replace the original stack):"
 DATETIME=$(date +"%Y%m%d%H%M%S")
-echo "  cp $DEPLOYMENT_DIR/.tutum-stack-id $DEPLOYMENT_DIR/.tutum-stack-id.bak.$DATETIME"
-echo "  tutum stack create --name=${STACK_NAME}clone${DATETIME} -f $DEPLOYMENT_DIR/docker-compose-production-tutum.yml | tee $DEPLOYMENT_DIR/.tutum-stack-id && \\"
-echo "  tutum stack start \$(cat $DEPLOYMENT_DIR/.tutum-stack-id)"
+echo "  cp $DEPLOYMENT_DIR/.docker-cloud-stack-id $DEPLOYMENT_DIR/.docker-cloud-stack-id.bak.$DATETIME"
+echo "  docker-cloud stack create --name=${STACK_NAME}clone${DATETIME} -f $DEPLOYMENT_DIR/docker-compose-production-docker-cloud.yml | tee $DEPLOYMENT_DIR/.docker-cloud-stack-id && \\"
+echo "  docker-cloud stack start \$(cat $DEPLOYMENT_DIR/.docker-cloud-stack-id)"
 echo
 echo "# To deploy a new stack with the same source code:"
 echo "  export DATA=$DATA"
@@ -64,45 +64,45 @@ echo "  export BRANCH_TO_DEPLOY=$BRANCH_TO_DEPLOY"
 echo "  source deploy/prepare.sh"
 echo "  deploy/generate-config.sh"
 
-STACK_ID=$(cat .tutum-stack-id)
-tutum stack inspect $STACK_ID > .tutum-stack.json
+STACK_ID=$(cat .docker-cloud-stack-id)
+docker-cloud stack inspect $STACK_ID > .docker-cloud-stack.json
 
-if [ "$(cat .tutum-stack.json | jq -r '.state')" == "Terminated" ]; then
+if [ "$(cat .docker-cloud-stack.json | jq -r '.state')" == "Terminated" ]; then
     echo "Stack is terminated";
     exit 0;
 fi
 
 echo
 echo "# The stack's non-public containers:"
-tutum container ps | grep $STACK_NAME | tee .tutum-containers
+docker-cloud container ps | grep $STACK_NAME | tee .docker-cloud-containers
 
 echo
 echo "# To open a shell into the stack's non-public containers:"
-cat .tutum-containers | grep -v Terminated | awk '{ print "tutum exec " $2 " /bin/bash # (" $1 ")"  }'
+cat .docker-cloud-containers | grep -v Terminated | awk '{ print "docker-cloud exec " $2 " /bin/bash # (" $1 ")"  }'
 
 # Commented since broken
 #echo
 #echo "# The stack's non-public containers are running on the following nodes:"
 #set -x
-#cat .tutum-stack.json | jq '.services' | grep _ENV_TUTUM_NODE_FQDN | grep -v '"key"' | grep '_\d_' | sed 's/^/{/' | sed 's/,/}/' | jq -s add | tee .tutum-containers-nodes
+#cat .docker-cloud-stack.json | jq '.services' | grep _ENV_DOCKERCLOUD_NODE_FQDN | grep -v '"key"' | grep '_\d_' | sed 's/^/{/' | sed 's/,/}/' | jq -s add | tee .docker-cloud-containers-nodes
 #echo
-#echo "# To ssh into the tutum nodes and run further diagnostics:"
-#cat .tutum-containers-nodes | jq -r '.[]' | sort -u | sed 's/^/ssh root@/'
+#echo "# To ssh into the docker-cloud nodes and run further diagnostics:"
+#cat .docker-cloud-containers-nodes | jq -r '.[]' | sort -u | sed 's/^/ssh root@/'
 #echo
 #echo "# Or, using mosh"
-#cat .tutum-containers-nodes | jq -r '.[]' | sort -u | sed 's/^/mosh root@/'
+#cat .docker-cloud-containers-nodes | jq -r '.[]' | sort -u | sed 's/^/mosh root@/'
 
-WEB_CONTAINER_ID=$(cat .tutum-containers | grep -v Terminated | grep ^web | awk '{ print $2  }')
-tutum container inspect $WEB_CONTAINER_ID > .tutum-web-container.json
-PHPHAPROXY_CONTAINER_ID=$(cat .tutum-containers | grep -v Terminated | grep ^phphaproxy | awk '{ print $2  }')
-tutum container inspect $PHPHAPROXY_CONTAINER_ID > .tutum-phphaproxy-container.json
+WEB_CONTAINER_ID=$(cat .docker-cloud-containers | grep -v Terminated | grep ^web | awk '{ print $2  }')
+docker-cloud container inspect $WEB_CONTAINER_ID > .docker-cloud-web-container.json
+PHPHAPROXY_CONTAINER_ID=$(cat .docker-cloud-containers | grep -v Terminated | grep ^phphaproxy | awk '{ print $2  }')
+docker-cloud container inspect $PHPHAPROXY_CONTAINER_ID > .docker-cloud-phphaproxy-container.json
 
-WEB_PORT=$(cat .tutum-web-container.json | jq '.container_ports  | map(select(.inner_port == 80)) | .[].outer_port')
-WEB_FQDN=$(cat .tutum-web-container.json | jq '.link_variables' | grep '"WEB.*_ENV_TUTUM_NODE_FQDN' | sed 's/^/{/' | sed 's/,/}/' | grep -v '_\d_' | jq -r '.[]')
+WEB_PORT=$(cat .docker-cloud-web-container.json | jq '.container_ports  | map(select(.inner_port == 80)) | .[].outer_port')
+WEB_FQDN=$(cat .docker-cloud-web-container.json | jq '.link_variables' | grep '"WEB.*_ENV_DOCKERCLOUD_NODE_FQDN' | sed 's/^/{/' | sed 's/,/}/' | grep -v '_\d_' | jq -r '.[]')
 export INNER_STATS_PORT=8088 # use 1936 later
-PHPHAPROXY_STATS_PORT=$(cat .tutum-phphaproxy-container.json | jq '.container_ports  | map(select(.inner_port == '$INNER_STATS_PORT')) | .[].outer_port')
-PHPHAPROXY_STATS_FQDN=$(cat .tutum-phphaproxy-container.json | jq '.link_variables' | grep '"PHPHAPROXY.*_ENV_TUTUM_NODE_FQDN' | sed 's/^/{/' | sed 's/,/}/' | grep -v '_\d_' | jq -r '.[]')
-PHPHAPROXY_STATS_AUTH=$(cat .tutum-phphaproxy-container.json | jq '.link_variables' | grep '"PHPHAPROXY.*_ENV_STATS_AUTH' | sed 's/^/{/' | sed 's/,//' | sed 's/$/}/' | grep -v '_\d_' | jq -r '.[]')
+PHPHAPROXY_STATS_PORT=$(cat .docker-cloud-phphaproxy-container.json | jq '.container_ports  | map(select(.inner_port == '$INNER_STATS_PORT')) | .[].outer_port')
+PHPHAPROXY_STATS_FQDN=$(cat .docker-cloud-phphaproxy-container.json | jq '.link_variables' | grep '"PHPHAPROXY.*_ENV_DOCKERCLOUD_NODE_FQDN' | sed 's/^/{/' | sed 's/,/}/' | grep -v '_\d_' | jq -r '.[]')
+PHPHAPROXY_STATS_AUTH=$(cat .docker-cloud-phphaproxy-container.json | jq '.link_variables' | grep '"PHPHAPROXY.*_ENV_STATS_AUTH' | sed 's/^/{/' | sed 's/,//' | sed 's/$/}/' | grep -v '_\d_' | jq -r '.[]')
 
 echo
 echo "# Health-checks for public frontend:"

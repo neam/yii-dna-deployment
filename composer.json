@@ -19,7 +19,7 @@
         "util/prepare-new-db.sh",
         "util/setup-db.sh",
         "util/setup-rackspace-cloud-db.sh",
-        "util/tutum-shell.sh",
+        "util/docker-cloud-shell.sh",
         "util/upload-current-media-as-public-files.sh"
     ],
     "require": {
