@@ -36,10 +36,13 @@
 
     # make app config available as shell variables
     source vendor/neam/php-app-config/shell-export.sh
+    if [ "$PHP_APP_CONFIG_EXPORTED" == "1" ]; then
 
-    source $BUILD_DIR/set-deployment-target.inc.sh
+      source $BUILD_DIR/set-deployment-target.inc.sh
 
-    # show exported variables
-    $BUILD_DIR/vendor/neam/yii-dna-deployment/deploy/show-prepared.sh
+      # show exported variables
+      $BUILD_DIR/vendor/neam/yii-dna-deployment/deploy/show-prepared.sh
+
+    fi
 
     cd $pwd
