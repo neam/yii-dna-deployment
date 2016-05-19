@@ -26,6 +26,7 @@
     "require": {
         "php": ">=5.3.0",
         "neam/docker-stack": "*@dev",
+        "neam/docker-diff-based-layers": "*@dev",
         "neam/yii-dna-pre-release-testing": "*@dev",
         "neam/yii-dna-test-framework": "*@dev",
         "neam/php-app-config": "*@dev"
