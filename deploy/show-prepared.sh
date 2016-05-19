@@ -24,7 +24,6 @@ echo "export VIRTUAL_HOST='$VIRTUAL_HOST'"
 echo "export VIRTUAL_HOST_WEIGHT='$VIRTUAL_HOST_WEIGHT'"
 echo
 echo "Necessary for build and push:"
-echo "export DOCKER_REGISTRY_USER='$DOCKER_REGISTRY_USER'"
 echo "export DOCKERCLOUD_USER='$DOCKERCLOUD_USER'"
 echo "export REPO='$REPO'"
 echo "export COMMITSHA='$COMMITSHA'"
