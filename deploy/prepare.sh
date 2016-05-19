@@ -33,21 +33,13 @@
     export APPVHOST="" # always reset this, let it be set from set-deployment-target.inc.sh below
 
     export CONFIG_INCLUDE=vendor/neam/yii-dna-deployment/deploy/prepare.php
-    php vendor/neam/php-app-config/export.php > /tmp/php-app-config.sh
 
-    if [ "$?" == "0" ]; then
+    # make app config available as shell variables
+    source vendor/neam/php-app-config/shell-export.sh
 
-        source /tmp/php-app-config.sh
-        source $BUILD_DIR/set-deployment-target.inc.sh
+    source $BUILD_DIR/set-deployment-target.inc.sh
 
-        # show exported variables
-        $BUILD_DIR/vendor/neam/yii-dna-deployment/deploy/show-prepared.sh
-
-    else
-
-        # show error messages
-        cat /tmp/php-app-config.sh
-
-    fi
+    # show exported variables
+    $BUILD_DIR/vendor/neam/yii-dna-deployment/deploy/show-prepared.sh
 
     cd $pwd
