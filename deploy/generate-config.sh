@@ -55,15 +55,16 @@ export CONFIG_INCLUDE=vendor/neam/yii-dna-deployment/deploy/generate-config.php
 
 # dry-run config export to catch errors during the process
 set +e
-php -d variables_order="EGPCS" vendor/neam/php-app-config/export.php > $DEPLOYMENT_DIR/.env
-if [ ! "$?" == "0" ]; then
-  cat $DEPLOYMENT_DIR/.env
+php -d variables_order="EGPCS" vendor/neam/php-app-config/export.php > $DEPLOYMENT_DIR/.env.tmp
+if [ ! "$PHP_APP_CONFIG_EXPORTED" == "1" ]; then
+  #cat $DEPLOYMENT_DIR/.env.tmp
   exit 1;
 fi
 set -e
 
 # we ignore runtime-config which are set on the fly
-php -d variables_order="EGPCS" vendor/neam/php-app-config/export.php | grep -v 'export DATABASE_USER=' | grep -v 'export DATA=' | grep -v 'export DATABASE_NAME=' > $DEPLOYMENT_DIR/.env
+cat $DEPLOYMENT_DIR/.env.tmp | grep -v 'export DATABASE_USER=' | grep -v 'export DATA=' | grep -v 'export DATABASE_NAME=' > $DEPLOYMENT_DIR/.env
+rm $DEPLOYMENT_DIR/.env.tmp
 
 echo
 echo 'Config for '$APPVHOST':'
