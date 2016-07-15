@@ -112,6 +112,14 @@ if [ "$DATABASE_HOST" == "" ]; then
     $script_path/../util/prepare-new-db.sh $APPVHOST
 fi
 
+# generate deploy-script
+
+echo "  export DOCKERCLOUD_USER=$DOCKERCLOUD_USER" > $DEPLOYMENT_DIR/deploy-to-docker-cloud.sh
+echo "  export DOCKERCLOUD_APIKEY=$DOCKERCLOUD_APIKEY" > $DEPLOYMENT_DIR/deploy-to-docker-cloud.sh
+echo "  docker-cloud stack create --name=$STACK_NAME -f $DEPLOYMENT_DIR/docker-compose-production.docker-cloud.yml | tee $DEPLOYMENT_DIR/.docker-cloud-stack-id" > $DEPLOYMENT_DIR/deploy-to-docker-cloud.sh
+echo "  docker-cloud stack start \$(cat $DEPLOYMENT_DIR/.docker-cloud-stack-id)" > $DEPLOYMENT_DIR/deploy-to-docker-cloud.sh
+chmod +x $DEPLOYMENT_DIR/deploy-to-docker-cloud.sh
+
 echo
 echo 'Config is prepared for '$APPVHOST'.'
 echo
@@ -121,10 +129,7 @@ echo "  vendor/neam/yii-dna-deployment/deploy/build.sh"
 echo
 echo 'To deploy to docker-cloud:'
 echo
-echo "  export DOCKERCLOUD_USER=$DOCKERCLOUD_USER"
-echo "  export DOCKERCLOUD_APIKEY=$DOCKERCLOUD_APIKEY"
-echo "  docker-cloud stack create --name=$STACK_NAME -f $DEPLOYMENT_DIR/docker-compose-production.docker-cloud.yml | tee $DEPLOYMENT_DIR/.docker-cloud-stack-id && \\"
-echo "  docker-cloud stack start \$(cat $DEPLOYMENT_DIR/.docker-cloud-stack-id)"
+echo "  $DEPLOYMENT_DIR/deploy-to-docker-cloud.sh"
 echo
 #echo "  docker-cloud stack update -f $DEPLOYMENT_DIR/docker-compose-production.docker-cloud.yml \$(cat $DEPLOYMENT_DIR/.docker-cloud-stack-id)"
 #echo "  docker-cloud stack redeploy \$(cat $DEPLOYMENT_DIR/.docker-cloud-stack-id)"
