@@ -13,7 +13,9 @@
         }
     ],
     "bin": [
+        "deploy/build.docker-diff-based-layers.sh",
         "deploy/build.sh",
+        "deploy/copy-src.sh",
         "deploy/generate-config.sh",
         "deploy/show-prepared.sh",
         "util/prepare-new-db.sh",
