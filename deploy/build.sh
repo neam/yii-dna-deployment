@@ -34,7 +34,6 @@ function build_src_image_for_service_in_stack {
     local __returnvar=$1
     local SERVICE=$2
 
-    echo "* Running build_src_image_for_service_in_stack for $SERVICE"
 
     if [ ! -f .stack.$SERVICE.Dockerfile ]; then
       >&2 echo "Error: Missing Dockerfile for the stack's $SERVICE-service (.stack.$SERVICE.Dockerfile)";
@@ -49,6 +48,8 @@ function build_src_image_for_service_in_stack {
     local TAG_TO_PUSH="git-commit-$COMMITSHA"
     eval $__returnvar="'$TAG_TO_PUSH'"
 
+    echo "* Running build_src_image_for_service_in_stack for $SERVICE as $IMAGE_REPO:$TAG_TO_PUSH"
+
     #1. build an ordinary src image
     time docker build -f .stack.$SERVICE.Dockerfile -t $IMAGE_REPO:$LARGE_LAYER_TAG .
 
@@ -61,7 +62,7 @@ function build_src_image_for_service_in_stack {
 
 }
 
-function push_src_image_for_service_in_stack {
+function echo_push_src_image_for_service_in_stack {
 
     local SERVICE=$1
     local TAG_TO_PUSH=$2
@@ -69,19 +70,22 @@ function push_src_image_for_service_in_stack {
 
     echo "* Running push_src_image_for_service_in_stack for $SERVICE, pushing tag $TAG_TO_PUSH"
 
-    docker push $IMAGE_REPO:$TAG_TO_PUSH
-    echo "$TAG_TO_PUSH" > .stack.$SERVICE.previously-pushed-tag
+    echo docker push $IMAGE_REPO:$TAG_TO_PUSH
 
 }
+
+# prepare
+
+prepare_src_image_contents_for_service_in_stack php
+prepare_src_image_contents_for_service_in_stack nginx
 
 # build and push src to docker-cloud
 
 build_src_image_for_service_in_stack TAG_TO_PUSH_PHP php
 build_src_image_for_service_in_stack TAG_TO_PUSH_NGINX nginx
 
-push_src_image_for_service_in_stack php $TAG_TO_PUSH_PHP
-push_src_image_for_service_in_stack nginx $TAG_TO_PUSH_NGINX
-
-# display deployment instructions
-
-echo 'If no errors are shown above, docker images are prepared for '$APPVHOST' deployment'
+echo 'If no errors are shown above, docker images are built for '$APPVHOST' deployment. To push:'
+echo
+echo_push_src_image_for_service_in_stack php $TAG_TO_PUSH_PHP
+echo_push_src_image_for_service_in_stack nginx $TAG_TO_PUSH_NGINX
+echo
