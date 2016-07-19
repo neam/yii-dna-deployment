@@ -6,6 +6,8 @@ set -o errexit
 # debug
 #set -x
 
+echo 'Preparing docker images for '$APPVHOST' deployment...'
+
 # current package path
 script_path="$(dirname $0)"
 
@@ -31,6 +33,8 @@ function build_src_image_for_service_in_stack {
 
     local __returnvar=$1
     local SERVICE=$2
+
+    echo "* Running build_src_image_for_service_in_stack for $SERVICE"
 
     if [ ! -f .stack.$SERVICE.Dockerfile ]; then
       >&2 echo "Error: Missing Dockerfile for the stack's $SERVICE-service (.stack.$SERVICE.Dockerfile)";
@@ -62,6 +66,8 @@ function push_src_image_for_service_in_stack {
     local SERVICE=$1
     local TAG_TO_PUSH=$2
     local IMAGE_REPO="$DOCKERCLOUD_USER/$REPO-$SERVICE"
+
+    echo "* Running push_src_image_for_service_in_stack for $SERVICE, pushing tag $TAG_TO_PUSH"
 
     docker push $IMAGE_REPO:$TAG_TO_PUSH
     echo "$TAG_TO_PUSH" > .stack.$SERVICE.previously-pushed-tag
