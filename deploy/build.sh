@@ -34,6 +34,8 @@ function build_src_image_for_service_in_stack {
     local __returnvar=$1
     local SERVICE=$2
 
+    cd src-images-build/$SERVICE
+
     if [ ! -f .stack.$SERVICE.Dockerfile ]; then
       >&2 echo "Error: Missing Dockerfile for the stack's $SERVICE-service (.stack.$SERVICE.Dockerfile)";
       exit 1;
@@ -51,6 +53,8 @@ function build_src_image_for_service_in_stack {
 
     #1. build an ordinary src image
     time docker build -f .stack.$SERVICE.Dockerfile -t $IMAGE_REPO:$LARGE_LAYER_TAG .
+
+    cd -
 
     # Verify that subsequent `COPY . /app` commands re-adds all files in every layer instead of only the files that have changed.
     docker history $IMAGE_REPO:$LARGE_LAYER_TAG | head -n 5
