@@ -11,9 +11,6 @@ echo 'Preparing docker images for '$APPVHOST' deployment...'
 # current package path
 script_path="$(dirname $0)"
 
-# docker-diff-based-layers is assumed to be installed in the same directory as yii-dna-deployment
-DOCKER_DIFF_BASED_LAYERS_PACKAGE_PATH="$script_path/../../docker-diff-based-layers"
-
 if [ "$DOCKERCLOUD_USER" == "" ]; then
   echo "Error: Missing information about which docker-cloud user owns the repository to push to (DOCKERCLOUD_USER)";
   exit 1;
