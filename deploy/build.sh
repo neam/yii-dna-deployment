@@ -34,7 +34,6 @@ function build_src_image_for_service_in_stack {
     local __returnvar=$1
     local SERVICE=$2
 
-
     if [ ! -f .stack.$SERVICE.Dockerfile ]; then
       >&2 echo "Error: Missing Dockerfile for the stack's $SERVICE-service (.stack.$SERVICE.Dockerfile)";
       exit 1;
@@ -59,7 +58,6 @@ function build_src_image_for_service_in_stack {
 
     docker tag $IMAGE_REPO:$LARGE_LAYER_TAG $IMAGE_REPO:$TAG_TO_PUSH
 
-
 }
 
 function echo_push_src_image_for_service_in_stack {
@@ -73,11 +71,6 @@ function echo_push_src_image_for_service_in_stack {
     echo docker push $IMAGE_REPO:$TAG_TO_PUSH
 
 }
-
-# prepare
-
-prepare_src_image_contents_for_service_in_stack php
-prepare_src_image_contents_for_service_in_stack nginx
 
 # build and push src to docker-cloud
 
