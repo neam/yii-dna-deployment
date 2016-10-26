@@ -61,7 +61,7 @@ function build_src_image_for_service_in_stack {
 
 }
 
-function echo_push_src_image_for_service_in_stack {
+function push_src_image_for_service_in_stack {
 
     local SERVICE=$1
     local TAG_TO_PUSH=$2
@@ -78,8 +78,8 @@ function echo_push_src_image_for_service_in_stack {
 build_src_image_for_service_in_stack TAG_TO_PUSH_PHP php
 build_src_image_for_service_in_stack TAG_TO_PUSH_NGINX nginx
 
-echo 'If no errors are shown above, docker images are built for '$APPVHOST' deployment. To push:'
+echo 'Docker images are built for '$APPVHOST' deployment.'
 echo
-echo_push_src_image_for_service_in_stack php $TAG_TO_PUSH_PHP
-echo_push_src_image_for_service_in_stack nginx $TAG_TO_PUSH_NGINX
+push_src_image_for_service_in_stack php $TAG_TO_PUSH_PHP
+push_src_image_for_service_in_stack nginx $TAG_TO_PUSH_NGINX
 echo
