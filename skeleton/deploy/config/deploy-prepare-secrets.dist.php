@@ -7,9 +7,7 @@ use Exception;
 // Non-versioned secrets that are only required in the deploy prepare step
 
 $_ENV["DOCKERCLOUD_USER"] = "";
-$_ENV["DOCKERCLOUD_EMAIL"] = "";
-$_ENV["DOCKERCLOUD_PASSWORD"] = "";
-$_ENV["DOCKERCLOUD_APIKEY"] = "";
+$_ENV["DOCKERCLOUD_PASS"] = "";
 
 // Non-versioned secrets that depend on production stability level
 

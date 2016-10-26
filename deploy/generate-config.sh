@@ -112,29 +112,12 @@ if [ "$DATABASE_HOST" == "" ]; then
     $script_path/../util/prepare-new-db.sh $APPVHOST
 fi
 
-# generate deploy-script
-
-echo "  export DOCKERCLOUD_USER=$DOCKERCLOUD_USER" > $DEPLOYMENT_DIR/deploy-to-docker-cloud.sh
-echo "  export DOCKERCLOUD_APIKEY=$DOCKERCLOUD_APIKEY" > $DEPLOYMENT_DIR/deploy-to-docker-cloud.sh
-echo "  docker-cloud stack create --name=$STACK_NAME -f $DEPLOYMENT_DIR/docker-compose-production.docker-cloud.yml | tee $DEPLOYMENT_DIR/.docker-cloud-stack-id" > $DEPLOYMENT_DIR/deploy-to-docker-cloud.sh
-echo "  docker-cloud stack start \$(cat $DEPLOYMENT_DIR/.docker-cloud-stack-id)" > $DEPLOYMENT_DIR/deploy-to-docker-cloud.sh
-chmod +x $DEPLOYMENT_DIR/deploy-to-docker-cloud.sh
-
 echo
 echo 'Config is prepared for '$APPVHOST'.'
 echo
-echo 'If not already done, build images and push to docker-cloud registry:'
+echo "To deploy to docker-cloud (using the currently set Docker Cloud user 'DOCKERCLOUD_USER=$DOCKERCLOUD_USER'):"
 echo
-echo "  vendor/neam/yii-dna-deployment/deploy/build.sh"
+echo "  vendor/neam/yii-dna-deployment/deploy/to-docker-cloud.sh $DEPLOYMENT_DIR"
 echo
-echo 'To deploy to docker-cloud:'
+echo '(Make sure you have built and pushed the docker images docker-cloud registry before deploying)'
 echo
-echo "  $DEPLOYMENT_DIR/deploy-to-docker-cloud.sh"
-echo
-#echo "  docker-cloud stack update -f $DEPLOYMENT_DIR/docker-compose-production.docker-cloud.yml \$(cat $DEPLOYMENT_DIR/.docker-cloud-stack-id)"
-#echo "  docker-cloud stack redeploy \$(cat $DEPLOYMENT_DIR/.docker-cloud-stack-id)"
-#echo
-#echo 'To deploy to the current docker host:'
-#echo
-#echo "  docker-compose --project-name $APPVHOST -f $DEPLOYMENT_DIR/docker-compose-production.yml up -d"
-#echo
