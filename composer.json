@@ -18,6 +18,7 @@
         "deploy/copy-src.sh",
         "deploy/generate-config.sh",
         "deploy/show-prepared.sh",
+        "deploy/to-docker-cloud.sh",
         "util/prepare-new-db.sh",
         "util/setup-db.sh",
         "util/docker-cloud-diagnose.sh",
