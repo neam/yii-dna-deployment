@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
-set -e
-set -x
+# fail on any error
+set -o errexit
+
+# debug
+#set -x
 
 DEPLOYMENT_DIR="$1"
 STACK_NAME="$(basename $DEPLOYMENT_DIR)"
