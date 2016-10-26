@@ -26,9 +26,26 @@ if [ "$COMMITSHA" == "" ]; then
   exit 1;
 fi
 
-function build_src_image_for_service_in_stack {
+if [ "$1" == "--skip-build" ]; then
+  SKIP_BUILD=1
+fi
+
+if [ "$1" == "--skip-push" ]; then
+  SKIP_PUSH=1
+fi
+
+function tag_for_service_in_stack {
 
     local __returnvar=$1
+
+    local TAG_TO_PUSH="git-commit-$COMMITSHA"
+    eval $__returnvar="'$TAG_TO_PUSH'"
+
+}
+
+function build_src_image_for_service_in_stack {
+
+    local TAG_TO_PUSH=$1
     local SERVICE=$2
 
     cd src-images-build/$SERVICE
@@ -42,9 +59,6 @@ function build_src_image_for_service_in_stack {
 
     # tags specific to the new src image
     local LARGE_LAYER_TAG="git-commit-$COMMITSHA.large-layer.not-pushed"
-
-    local TAG_TO_PUSH="git-commit-$COMMITSHA"
-    eval $__returnvar="'$TAG_TO_PUSH'"
 
     echo "* Running build_src_image_for_service_in_stack for $SERVICE as $IMAGE_REPO:$TAG_TO_PUSH"
 
@@ -61,6 +75,18 @@ function build_src_image_for_service_in_stack {
 
 }
 
+function echo_push_src_image_for_service_in_stack {
+
+    local SERVICE=$1
+    local TAG_TO_PUSH=$2
+    local IMAGE_REPO="$DOCKERCLOUD_USER/$REPO-$SERVICE"
+
+    echo "# To push $SERVICE, tag $TAG_TO_PUSH:"
+
+    echo docker push $IMAGE_REPO:$TAG_TO_PUSH
+
+}
+
 function push_src_image_for_service_in_stack {
 
     local SERVICE=$1
@@ -69,17 +95,30 @@ function push_src_image_for_service_in_stack {
 
     echo "* Running push_src_image_for_service_in_stack for $SERVICE, pushing tag $TAG_TO_PUSH"
 
-    echo docker push $IMAGE_REPO:$TAG_TO_PUSH
+    docker push $IMAGE_REPO:$TAG_TO_PUSH
 
 }
 
 # build and push src to docker-cloud
 
-build_src_image_for_service_in_stack TAG_TO_PUSH_PHP php
-build_src_image_for_service_in_stack TAG_TO_PUSH_NGINX nginx
+tag_for_service_in_stack TAG_TO_PUSH_PHP
+tag_for_service_in_stack TAG_TO_PUSH_NGINX
 
-echo 'Docker images are built for '$APPVHOST' deployment.'
-echo
-push_src_image_for_service_in_stack php $TAG_TO_PUSH_PHP
-push_src_image_for_service_in_stack nginx $TAG_TO_PUSH_NGINX
-echo
+if [ ! "$SKIP_BUILD" == "1" ]; then
+  vendor/neam/yii-dna-deployment/deploy/copy-src.sh
+  build_src_image_for_service_in_stack $TAG_TO_PUSH_PHP php
+  build_src_image_for_service_in_stack $TAG_TO_PUSH_NGINX nginx
+  echo
+  echo 'Docker images are built for '$APPVHOST' deployment.'
+fi
+
+if [ "$SKIP_PUSH" == "1" ]; then
+  echo_push_src_image_for_service_in_stack php $TAG_TO_PUSH_PHP
+  echo_push_src_image_for_service_in_stack nginx $TAG_TO_PUSH_NGINX
+else
+  docker login --username $DOCKERCLOUD_USER --password $DOCKERCLOUD_PASS
+  push_src_image_for_service_in_stack php $TAG_TO_PUSH_PHP
+  push_src_image_for_service_in_stack nginx $TAG_TO_PUSH_NGINX
+  echo
+  echo 'Docker images are pushed for '$APPVHOST' deployment.'
+fi
