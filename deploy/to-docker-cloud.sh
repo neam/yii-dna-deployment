@@ -15,7 +15,7 @@ id=$(docker run -d -e DOCKERCLOUD_USER=$DOCKERCLOUD_USER -e DOCKERCLOUD_PASS=$DO
 test "$(docker wait "$id")" -eq 0 || (docker logs "$id" && exit 1)
 UUID=$(docker logs "$id")
 echo $UUID | tee $DEPLOYMENT_DIR/.docker-cloud-stack-id
-echo "* Starting the stack"
+echo "* Starting the stack, identified by $UUID"
 id=$(docker run -d -e DOCKERCLOUD_USER=$DOCKERCLOUD_USER -e DOCKERCLOUD_PASS=$DOCKERCLOUD_PASS -v "$(pwd)/$DEPLOYMENT_DIR:/deployment-dir" dockercloud/cli stack start $UUID)
 test "$(docker wait "$id")" -eq 0 || (docker logs "$id" && exit 1)
 echo "* Listing current stacks"
