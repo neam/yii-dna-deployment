@@ -1,37 +1,10 @@
 #!/bin/bash
 
-# Script to deploy the cms (currently to Dokku) during continuous integration (sourced)
+# Script to generate config for the 12-factor-app's docker-cloud stack
 
-# The following env vars needs to be set properly:
-# - DRONE_BUILD_DIR
-# - APPNAME
-# - APPVHOST
-#
-# ...along with the config to be set:
-# - USER_GENERATED_DATA_S3_BUCKET
-# - USER_DATA_BACKUP_UPLOADERS_ACCESS_KEY
-# - USER_DATA_BACKUP_UPLOADERS_SECRET
-# - PUBLIC_FILES_S3_BUCKET
-# - PUBLIC_FILE_UPLOADERS_ACCESS_KEY
-# - PUBLIC_FILE_UPLOADERS_SECRET
-# - COMPOSER_GITHUB_TOKEN
-# - SAUCE_USERNAME
-# - SAUCE_ACCESS_KEY
-# - NEW_RELIC_LICENSE_KEY
-# - SMTP_URL
-# - SENTRY_DSN
-# - FILEPICKER_API_KEY
-# - GA_TRACKING_ID
-# - COMMIT_MESSAGE
-# - BRANCH
-# - BRAND_HOME_URL
-# - CMS_APPNAME
-# - CMS_HOST
-# - CMS_CONFIG_ENVIRONMENT
-# - CMS_BASE_URL
+set -e
 
 # debug
-
 #set -x
 
 # script path
@@ -46,12 +19,24 @@ function servicename {
 
     # Permitted characters: [0-9,a-z,A-Z] (basic Latin letters, digits 0-9)
     STR=${STR//\//}
+    STR=${STR//%/}
     STR=${STR//./}
     STR=${STR//-/}
     STR=${STR//_/}
     STR="$(echo $STR | tr '[:upper:]' '[:lower:]')" # UPPERCASE to lowercase
     # Max length 64 chars
     STR=${STR:0:64}
+
+    echo "$STR"
+
+}
+
+function sedescape {
+
+    local STR=$1
+
+    # Permitted characters: [0-9,a-z,A-Z] (basic Latin letters, digits 0-9)
+    STR="${STR/\./\.}"
 
     echo "$STR"
 
@@ -68,47 +53,58 @@ mkdir -p "$DEPLOYMENT_DIR"
 
 export CONFIG_INCLUDE=vendor/neam/yii-dna-deployment/deploy/generate-config.php
 
+# dry-run config export to catch errors during the process
+set +e
+php -d variables_order="EGPCS" vendor/neam/php-app-config/export.php > $DEPLOYMENT_DIR/.env.tmp
+if [ ! "$PHP_APP_CONFIG_EXPORTED" == "1" ]; then
+  #cat $DEPLOYMENT_DIR/.env.tmp
+  exit 1;
+fi
+set -e
+
+# we ignore runtime-config which are set on the fly
+cat $DEPLOYMENT_DIR/.env.tmp | grep -v 'export DATABASE_USER=' | grep -v 'export DATA=' | grep -v 'export DATABASE_NAME=' > $DEPLOYMENT_DIR/.env
+rm $DEPLOYMENT_DIR/.env.tmp
+
 echo
 echo 'Config for '$APPVHOST':'
 echo
-php vendor/neam/php-app-config/export.php > $DEPLOYMENT_DIR/.env
-
-if [ "$?" == "0" ]; then
-    source $DEPLOYMENT_DIR/.env
-
-    # prepare stack yml
-
-    cat stack/docker-compose-production.yml \
-     | sed 's|%COMMITSHA%|'$COMMITSHA'|' \
-     | sed 's|%ENV_FILE_DIR%|.|' \
-     | sed 's|%APPVHOST%|'$APPVHOST'|' \
-     | sed 's|%DEPLOY_STABILITY_TAG%|'$DEPLOY_STABILITY_TAG'|' \
-     | sed 's|%VIRTUAL_HOST%|'$APPVHOST'|' \
-     > $DEPLOYMENT_DIR/docker-compose-production.yml
-
-    cat $DEPLOYMENT_DIR/.env \
-     | grep -v '=""' \
-     | sed 's|export |    |' \
-     | sed 's|="|: "|' \
-     | sed 's|\\\?|\?|' \
-     > $DEPLOYMENT_DIR/.env.yml
-
-    VIRTUAL_HOST_BASED_WEB_SERVICE_NAME=$(servicename "web${APPVHOST}${COMMITSHA}")
-
-    cat stack/docker-compose-production-tutum.yml \
-     | sed 's|%COMMITSHA%|'$COMMITSHA'|' \
-     | sed 's|%APPVHOST%|'$APPVHOST'|' \
-     | sed 's|%DEPLOY_STABILITY_TAG%|'$DEPLOY_STABILITY_TAG'|' \
-     | sed 's|%VIRTUAL_HOST%|'$APPVHOST'|' \
-     | sed 's|%VIRTUAL_HOST_BASED_WEB_SERVICE_NAME%|'$VIRTUAL_HOST_BASED_WEB_SERVICE_NAME'|' \
-     > $DEPLOYMENT_DIR/docker-compose-production-tutum.yml
-
-    sed -e '/ENVIRONMENT_YAML/ {' -e 'r '"$DEPLOYMENT_DIR/.env.yml" -e 'd' -e '}' -i '' $DEPLOYMENT_DIR/docker-compose-production-tutum.yml
-
-fi
-
 cat $DEPLOYMENT_DIR/.env
-echo
+
+source $DEPLOYMENT_DIR/.env
+
+# prepare stack yml
+
+cat stack/docker-compose-production.yml \
+ | sed 's|%COMMITSHA%|'$COMMITSHA'|' \
+ | sed 's|%ENV_FILE_DIR%|.|' \
+ | sed 's|%APPVHOST%|'$APPVHOST'|' \
+ | sed 's|%DEPLOY_STABILITY_TAG%|'$DEPLOY_STABILITY_TAG'|' \
+ | sed 's|%DOCKERCLOUD_USER%|'$DOCKERCLOUD_USER'|' \
+ | sed 's|%REPO%|'$REPO'|' \
+ | sed 's|%VIRTUAL_HOST%|'"$(sedescape "$VIRTUAL_HOST")"'|' \
+ > $DEPLOYMENT_DIR/docker-compose-production.yml
+
+cat $DEPLOYMENT_DIR/.env \
+ | grep -v '='"''" \
+ | sed 's|export |    |' \
+ | sed 's|='"'"'|: '"'"'|' \
+ | sed 's|\\\?|\?|' \
+ > $DEPLOYMENT_DIR/.env.yml
+
+VIRTUAL_HOST_BASED_WEB_SERVICE_NAME=$(servicename "web${APPVHOST}${COMMITSHA}")
+
+cat stack/docker-compose-production.docker-cloud.yml \
+ | sed 's|%COMMITSHA%|'$COMMITSHA'|' \
+ | sed 's|%APPVHOST%|'$APPVHOST'|' \
+ | sed 's|%DEPLOY_STABILITY_TAG%|'$DEPLOY_STABILITY_TAG'|' \
+ | sed 's|%DOCKERCLOUD_USER%|'$DOCKERCLOUD_USER'|' \
+ | sed 's|%REPO%|'$REPO'|' \
+ | sed 's|%VIRTUAL_HOST%|'"$(sedescape "$VIRTUAL_HOST")"'|' \
+ | sed 's|%VIRTUAL_HOST_BASED_WEB_SERVICE_NAME%|'$VIRTUAL_HOST_BASED_WEB_SERVICE_NAME'|' \
+ > $DEPLOYMENT_DIR/docker-compose-production.docker-cloud.yml
+
+sed -e '/ENVIRONMENT_YAML/ {' -e 'r '"$DEPLOYMENT_DIR/.env.yml" -e 'd' -e '}' -i '' $DEPLOYMENT_DIR/docker-compose-production.docker-cloud.yml
 
 # prepare new db
 
@@ -116,22 +112,12 @@ if [ "$DATABASE_HOST" == "" ]; then
     $script_path/../util/prepare-new-db.sh $APPVHOST
 fi
 
-echo 'If no errors are shown above, config is prepared for '$APPVHOST'. To build images and push to tutum registry:'
 echo
-echo "  vendor/neam/yii-dna-deployment/deploy/build.sh"
+echo 'Config is prepared for '$APPVHOST'.'
 echo
-echo "Make sure these tutum credentials are used"
+echo "To deploy to docker-cloud (using the currently set Docker Cloud user 'DOCKERCLOUD_USER=$DOCKERCLOUD_USER'):"
 echo
-echo "  export TUTUM_USER=\$TUTUM_USER"
-echo "  export TUTUM_APIKEY=\$TUTUM_APIKEY"
+echo "  vendor/neam/yii-dna-deployment/deploy/to-docker-cloud.sh $DEPLOYMENT_DIR"
 echo
-echo 'Then, run one of the following to deploy:'
-echo
-echo "  tutum stack create --name=$STACK_NAME -f $DEPLOYMENT_DIR/docker-compose-production-tutum.yml | tee $DEPLOYMENT_DIR/.tutum-stack-id && \\"
-echo "  tutum stack start \$(cat $DEPLOYMENT_DIR/.tutum-stack-id)"
-echo
-echo "  tutum stack update -f $DEPLOYMENT_DIR/docker-compose-production-tutum.yml \$(cat $DEPLOYMENT_DIR/.tutum-stack-id)"
-echo "  tutum stack redeploy \$(cat $DEPLOYMENT_DIR/.tutum-stack-id)"
-echo
-echo "  docker-compose --project-name $APPVHOST -f $DEPLOYMENT_DIR/docker-compose-production.yml up -d"
+echo '(Make sure you have built and pushed the docker images docker-cloud registry before deploying)'
 echo

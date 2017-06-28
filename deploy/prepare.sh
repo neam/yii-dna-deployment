@@ -6,14 +6,22 @@
     export BUILD_DIR="$pwd"
     #echo "pwd=$pwd"
 
+    # default to multi-tenant deployment
+    if [ "$DATA" == "" ]; then
+        export DATA='%DATA%'
+    fi
+
+    # default to current branch
     if [ "$BRANCH_TO_DEPLOY" == "" ]; then
         export BRANCH_TO_DEPLOY=$(git symbolic-ref --short -q HEAD)
     fi
 
+    # default to current git repo
     if [ "$PROJECT_GIT_REPO" == "" ]; then
         export PROJECT_GIT_REPO=$(git config --get remote.origin.url)
     fi
 
+    # default to current commitsha
     if [ "$COMMITSHA" == "" ]; then
         export COMMITSHA=$(git rev-parse --verify --short=7 HEAD)
     fi
@@ -25,22 +33,15 @@
     export APPVHOST="" # always reset this, let it be set from set-deployment-target.inc.sh below
 
     export CONFIG_INCLUDE=vendor/neam/yii-dna-deployment/deploy/prepare.php
-    php vendor/neam/php-app-config/export.php > /tmp/php-app-config.sh
 
-    if [ "$?" == "0" ]; then
+    # make app config available as shell variables
+    source vendor/neam/php-app-config/shell-export.sh
+    if [ "$PHP_APP_CONFIG_EXPORTED" == "1" ]; then
 
-        source /tmp/php-app-config.sh
-        source $DRONE_BUILD_DIR/set-deployment-target.inc.sh
-        export APPNAME=$WEB_APPNAME
-        export APPVHOST=$WEB_HOST
+      source $BUILD_DIR/set-deployment-target.inc.sh
 
-        # show exported variables
-        $BUILD_DIR/vendor/neam/yii-dna-deployment/deploy/show-prepared.sh
-
-    else
-
-        # show error messages
-        cat /tmp/php-app-config.sh
+      # show exported variables
+      $BUILD_DIR/vendor/neam/yii-dna-deployment/deploy/show-prepared.sh
 
     fi
 

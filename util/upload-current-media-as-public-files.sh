@@ -10,8 +10,7 @@ script_path=$(dirname $0)
 dna_path=$script_path/../../../../dna
 
 # make app config available as shell variables
-php vendor/neam/php-app-config/export.php | tee /tmp/php-app-config.sh
-source /tmp/php-app-config.sh
+source vendor/neam/php-app-config/shell-export.sh
 
 # set media path
 media_path=/files/$DATA/media

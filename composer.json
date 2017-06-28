@@ -13,29 +13,25 @@
         }
     ],
     "bin": [
+        "deploy/build.docker-diff-based-layers.sh",
         "deploy/build.sh",
+        "deploy/copy-src.sh",
         "deploy/generate-config.sh",
         "deploy/show-prepared.sh",
+        "deploy/to-docker-cloud.sh",
         "util/prepare-new-db.sh",
         "util/setup-db.sh",
-        "util/setup-rackspace-cloud-db.sh",
-        "util/tutum-ssh.sh",
-        "util/upload-current-media-as-public-files.sh",
-        "dokku-legacy/configure-s3cmd.sh",
-        "dokku-legacy/install-s3cmd.sh",
-        "dokku-legacy/app-buildstep-hook.sh",
-        "dokku-legacy/configure-persistent-p3media.sh",
-        "dokku-legacy/dokku-reset-db.sh",
-        "dokku-legacy/dokku-run-tests.sh",
-        "dokku-legacy/root-project-buildstep-hook.sh",
-        "dokku-legacy/update-buildpacks-file-revision.sh"
+        "util/docker-cloud-diagnose.sh",
+        "util/docker-cloud-shell.sh",
+        "util/upload-current-media-as-public-files.sh"
     ],
     "require": {
         "php": ">=5.3.0",
-        "neam/docker-stack": "dev-develop",
-        "neam/yii-dna-pre-release-testing": "dev-develop",
-        "neam/yii-dna-test-framework": "dev-develop",
-        "neam/php-app-config": "dev-develop"
+        "neam/docker-stack": "*@dev",
+        "neam/docker-diff-based-layers": "*@dev",
+        "neam/yii-dna-pre-release-testing": "*@dev",
+        "neam/yii-dna-test-framework": "*@dev",
+        "neam/php-app-config": "*@dev"
     },
     "require-dev": {
     }
