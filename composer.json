@@ -1,8 +1,8 @@
 {
-    "name": "neam/yii-dna-deployment",
-    "description": ".",
-    "keywords": ["php", "vm", "vagrant", "docker", "local-dev"],
-    "homepage": "https://github.com/neam/yii-dna-deployment",
+    "name": "neam/dna-project-base-cloud-deployment",
+    "description": "DNA Project Base Cloud Deployment",
+    "keywords": ["dna-project-base", "deployment", "docker", "docker-cloud"],
+    "homepage": "https://github.com/neam/dna-project-base-cloud-deployment",
     "type": "library",
     "license": "BSD-3-Clause",
     "authors": [
